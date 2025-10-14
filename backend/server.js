@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const User = require('./mongo'); 
+const bcrypt = require("bcrypt");
 
 const app = express();
 
@@ -20,7 +21,9 @@ app.post('/register', async (req, res) => {
      if (password.length < 6) {
     return res.status(400).json({ message: 'Password must be at least 6 characters long' });
   }
-    const newUser = new User({ email, password });
+  const hashedpass = await bcrypt.hash(password, 10);
+     
+  const newUser = new User({ email, password: hashedpass });
     await newUser.save();
     res.status(201).json({ message: 'User registered successfully', user: newUser });
   } catch (error) {
@@ -40,9 +43,11 @@ app.post('/login', async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: 'User not found' });
     }
-    if (user.password !== password) {
-      return res.status(400).json({ message: 'Invalid password' });
-    }
+  const isMatch = await bcrypt.compare(password, user.password);
+if (!isMatch) {
+  return res.status(400).json({ message: 'Invalid password' });
+}
+
     res.status(200).json({ message: 'Login successful', user });
   } catch (error) {
     console.error(error);

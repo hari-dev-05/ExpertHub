@@ -1,0 +1,14 @@
+html, body, #root {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: none;
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar, #root::-webkit-scrollbar {
+  display: none;
+}
+
+html, body, #root {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}

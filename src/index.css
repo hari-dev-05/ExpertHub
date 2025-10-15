@@ -12,3 +12,7 @@ html, body, #root {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;     /* Firefox */
 }
+.blur-sm {
+  filter: blur(2px);
+  pointer-events: none; /* optional to prevent interaction behind modal */
+}

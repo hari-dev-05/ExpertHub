@@ -1,30 +1,34 @@
 import React from "react";
 import Sidebar from "../Community/Sidebar";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useAuth } from "../AuthContext"; // your auth context
+import { useAuth } from "../Pages/AuthContext";
 
 const CommunityLayout = () => {
-  const navigate = useNavigate();
   const { accEmail } = useAuth(); // get logged-in email
+  const navigate = useNavigate();
 
-  const showLogin = !accEmail; // true if user is not logged in
+  // true if user is NOT logged in
+  const isLoggedIn = Boolean(accEmail);
+  const showLoginModal = !isLoggedIn;
 
   return (
     <div className="position-relative">
-      <div className={showLogin ? "blurred" : ""}>
+      {/* Main page content with blur if not logged in */}
+      <div className={showLoginModal ? "blurred" : ""}>
         <div className="container-fluid">
           <div className="row min-vh-100">
             <div className="col-12 col-md-3 col-lg-2 bg-light border-end p-0">
               <Sidebar />
             </div>
             <div className="col-12 col-md-9 col-lg-10 p-3">
-              <Outlet />
+              <Outlet /> {/* Nested routes render here */}
             </div>
           </div>
         </div>
       </div>
 
-      {showLogin && (
+      {/* Login Modal */}
+      {showLoginModal && (
         <div
           className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
           style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1050 }}
@@ -44,6 +48,7 @@ const CommunityLayout = () => {
         </div>
       )}
 
+      {/* Blur CSS */}
       <style>{`
         .blurred {
           filter: blur(4px);

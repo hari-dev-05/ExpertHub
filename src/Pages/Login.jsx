@@ -45,9 +45,9 @@ function Login() {
     >
       <div
         className="text-center bg-white shadow-lg p-5 rounded-4"
-        style={{ width: "400px", minHeight: "400px", borderTop: "5px solid #007bff" }}
+        style={{ width: "400px", minHeight: "400px", borderTop: "5px solid #092747ff" }}
       >
-        <h2 className="fw-bold mb-4" style={{ color: "#007bff", letterSpacing: "1px" }}>
+        <h2 className="fw-bold mb-4" style={{ color: "#082d54ff", letterSpacing: "1px" }}>
           Welcome Back
         </h2>
 

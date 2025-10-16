@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../Community/Sidebar";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../Pages/AuthContext";
@@ -7,9 +7,21 @@ const CommunityLayout = () => {
   const { accEmail } = useAuth(); // get logged-in email
   const navigate = useNavigate();
 
-  // true if user is NOT logged in
   const isLoggedIn = Boolean(accEmail);
-  const showLoginModal = !isLoggedIn;
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // Delay the modal by 3 seconds if not logged in
+  useEffect(() => {
+    let timer;
+    if (!isLoggedIn) {
+      timer = setTimeout(() => {
+        setShowLoginModal(true);
+      }, 3000); // 3 seconds
+    } else {
+      setShowLoginModal(false);
+    }
+    return () => clearTimeout(timer);
+  }, [isLoggedIn]);
 
   return (
     <div className="position-relative">

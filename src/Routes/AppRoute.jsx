@@ -1,17 +1,20 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Nav from "../Components/Nav.jsx";
+import { useLocation } from "react-router-dom";
 
+import Nav from "../Components/Nav.jsx";
 import Home from "../Pages/Home";
-import About from "../Pages/About";
-import Community from "../Pages/Community";
 import Account from "../Pages/Account";
 import Login from "../Pages/Login.jsx";
 import Signup from "../Pages/Signup.jsx";
-import { useLocation } from "react-router-dom";
 
-const AppRoute = () =>{
- const location = useLocation(); // Get current path
+import CommunityLayout from "../Community/CommunityLayout"; // layout with <Outlet />
+import ComHome from "../Community/ComHome.jsx";
+import ComProfile from "../Community/ComProfile.jsx";
+import ComPeople from "../Community/ComPeople.jsx";
+
+const AppRoute = () => {
+  const location = useLocation();
 
   // Pages where Navbar should NOT appear
   const hideNavbarPaths = ["/login", "/signup"];
@@ -20,16 +23,23 @@ const AppRoute = () =>{
     <>
       {/* Conditionally render Navbar */}
       {!hideNavbarPaths.includes(location.pathname) && <Nav />}
+
       <Routes>
         <Route path="/" element={<Home />} />
-        {/* <Route path="/about" element={<About />} /> */}
-        <Route path="/community" element={<Community />} />
         <Route path="/account" element={<Account />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+
+        {/* COMMUNITY ROUTES with nested layout */}
+        <Route path="/community" element={<CommunityLayout />}>
+          <Route index element={<ComHome />} />          {/* /community */}
+          <Route path="home" element={<ComHome />} />    {/* /community/home */}
+          <Route path="profile" element={<ComProfile />} /> {/* /community/profile */}
+          <Route path="people" element={<ComPeople />} />   {/* /community/people */}
+        </Route>
       </Routes>
     </>
   );
-}
+};
 
 export default AppRoute;

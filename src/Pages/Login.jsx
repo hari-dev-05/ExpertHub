@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 
+
 function Login() {
   const navigate = useNavigate();
   const { setAccEmail } = useAuth();
@@ -25,9 +26,7 @@ function Login() {
       setMessageColor('green');
       setAccEmail(email);
 
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
+      setTimeout(() => navigate('/'), 2000);
     } catch (error) {
       if (error.response) {
         setMessage(error.response.data.message);
@@ -41,13 +40,25 @@ function Login() {
   return (
     <div
       className="d-flex justify-content-center align-items-center vh-100"
-      style={{ background: "linear-gradient(135deg, #092849ff 40%, #e3f2fd 100%)" }}
+      style={{
+      backgroundImage: `url("/newimg.jpg")`,
+         backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
     >
       <div
-        className="text-center bg-white shadow-lg p-5 rounded-4"
-        style={{ width: "400px", minHeight: "400px", borderTop: "5px solid #092747ff" }}
+        className="text-center shadow-lg p-5 rounded-4"
+        style={{
+          width: '400px',
+          minHeight: '420px',
+          background: 'rgba(255, 255, 255, 0.15)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          color: 'white',
+        }}
       >
-        <h2 className="fw-bold mb-4" style={{ color: "#082d54ff", letterSpacing: "1px" }}>
+        <h2 className="fw-bold mb-4" style={{ letterSpacing: '1px' }}>
           Welcome Back
         </h2>
 
@@ -56,8 +67,11 @@ function Login() {
           placeholder="Email Address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="form-control mx-auto mb-3 border-0 border-bottom border-primary rounded-0 shadow-none"
-          style={{ width: "80%", background: "#f8f9fa" }}
+          className="form-control mx-auto mb-4 bg-transparent border-0 border-bottom text-white rounded-0 shadow-none"
+          style={{
+            width: '80%',
+            borderBottom: '1px solid rgba(255,255,255,0.6)',
+          }}
         />
 
         <input
@@ -65,14 +79,24 @@ function Login() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="form-control mx-auto mb-3 border-0 border-bottom border-primary rounded-0 shadow-none"
-          style={{ width: "80%", background: "#f8f9fa" }}
+          className="form-control mx-auto mb-4 bg-transparent border-0 border-bottom text-white rounded-0 shadow-none"
+          style={{
+            width: '80%',
+            borderBottom: '1px solid rgba(255,255,255,0.6)',
+          }}
         />
 
         <button
           onClick={handleLogin}
           className="btn fw-semibold text-white rounded-pill py-2"
-          style={{ width: "80%", backgroundColor: "#007bff", transition: "0.3s" }}
+          style={{
+            width: '80%',
+            background: 'rgba(0, 123, 255, 0.7)',
+            backdropFilter: 'blur(5px)',
+            transition: '0.3s',
+          }}
+          onMouseEnter={(e) => (e.target.style.background = 'rgba(0, 123, 255, 0.9)')}
+          onMouseLeave={(e) => (e.target.style.background = 'rgba(0, 123, 255, 0.7)')}
         >
           Login
         </button>
@@ -83,12 +107,12 @@ function Login() {
           </p>
         )}
 
-        <p className="mt-4 text-muted" style={{ fontSize: "0.9rem" }}>
-          Don’t have an account?{" "}
+        <p className="mt-4" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)' }}>
+          Don’t have an account?{' '}
           <button
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate('/signup')}
             className="btn p-0 border-0 bg-transparent"
-            style={{ color: "#007bff", textDecoration: "none" }}
+            style={{ color: '#00b4ff', textDecoration: 'underline' }}
           >
             Sign up
           </button>

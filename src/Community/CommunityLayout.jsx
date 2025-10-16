@@ -4,28 +4,30 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../Pages/AuthContext";
 
 const CommunityLayout = () => {
-  const { accEmail } = useAuth(); // get logged-in email
+  const { user } = useAuth(); // use full user object
   const navigate = useNavigate();
-
-  const isLoggedIn = Boolean(accEmail);
+  const [authLoaded, setAuthLoaded] = useState(false); // wait for AuthContext load
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  // Delay the modal by 3 seconds if not logged in
+  useEffect(() => {
+    // Mark auth as loaded when user state is ready
+    setAuthLoaded(true);
+  }, [user]);
+
   useEffect(() => {
     let timer;
-    if (!isLoggedIn) {
-      timer = setTimeout(() => {
-        setShowLoginModal(true);
-      }, 3000); // 3 seconds
+    if (authLoaded && !user) {
+      timer = setTimeout(() => setShowLoginModal(true), 3000); // 3 sec delay
     } else {
       setShowLoginModal(false);
     }
     return () => clearTimeout(timer);
-  }, [isLoggedIn]);
+  }, [authLoaded, user]);
+
+  const isLoggedIn = Boolean(user);
 
   return (
     <div className="position-relative">
-      {/* Main page content with blur if not logged in */}
       <div className={showLoginModal ? "blurred" : ""}>
         <div className="container-fluid">
           <div className="row min-vh-100">
@@ -33,13 +35,12 @@ const CommunityLayout = () => {
               <Sidebar />
             </div>
             <div className="col-12 col-md-9 col-lg-10 p-3">
-              <Outlet /> {/* Nested routes render here */}
+              <Outlet />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Login Modal */}
       {showLoginModal && (
         <div
           className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
@@ -60,7 +61,6 @@ const CommunityLayout = () => {
         </div>
       )}
 
-      {/* Blur CSS */}
       <style>{`
         .blurred {
           filter: blur(4px);

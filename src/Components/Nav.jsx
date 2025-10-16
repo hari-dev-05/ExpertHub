@@ -4,8 +4,8 @@ import { useAuth } from "../Pages/AuthContext";
 
 const Nav = () => {
   const [open, setOpen] = useState(false);
-  const { accEmail } = useAuth();          
- 
+  const { user } = useAuth();  // <-- use user instead of accEmail
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid">
@@ -24,29 +24,24 @@ const Nav = () => {
 
         <div className={`collapse navbar-collapse${open ? " show" : ""}`} id="navbarNav">
           <ul className="navbar-nav ms-auto">
-
             <li className="nav-item me-3">
               <Link className="nav-link" to="/" onClick={() => setOpen(false)}>Home</Link>
             </li>
-
             <li className="nav-item me-3">
-              <Link className="nav-link" to="/community" onClick={() => setOpen(false)}>
-                Community
-              </Link>
+              <Link className="nav-link" to="/community" onClick={() => setOpen(false)}>Community</Link>
             </li>
 
-            {!accEmail && (
+            {!user && (
               <li className="nav-item me-3">
                 <Link className="nav-link" to="/login" onClick={() => setOpen(false)}>Login</Link>
               </li>
             )}
 
-            {accEmail && (
+            {user && (
               <li className="nav-item">
                 <Link className="nav-link" to="/account" onClick={() => setOpen(false)}>Account</Link>
               </li>
             )}
-
           </ul>
         </div>
       </div>

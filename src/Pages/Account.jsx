@@ -3,14 +3,21 @@ import { useAuth } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const Account = () => {
-  const { accEmail, setAccEmail } = useAuth();
+  const { user, logout } = useAuth(); // use full user object
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    setAccEmail("");                 // Clear React context
-    localStorage.removeItem("accEmail"); // Clear localStorage
-    navigate("/login");              // Redirect to login page
+    logout();          // clear user from context and localStorage
+    navigate("/login"); // redirect to login page
   };
+
+  if (!user) {
+    return (
+      <div className="text-center mt-5">
+        <p>Please log in to view your account details.</p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -27,7 +34,7 @@ const Account = () => {
 
         <div className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom mb-3">
           <h5 className="mb-0">Email:</h5>
-          <p className="mb-0">{accEmail}</p>
+          <p className="mb-0">{user.email}</p> {/* use user.email */}
         </div>
 
         <p className="text-muted" style={{ fontSize: "0.9rem" }}>

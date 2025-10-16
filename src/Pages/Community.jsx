@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Sidebar from "../Community/Sidebar";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useAuth } from "../AuthContext"; // your auth context
+import { useAuth } from "../AuthContext"; // updated context
 
 const CommunityLayout = () => {
   const navigate = useNavigate();
-  const { accEmail } = useAuth(); // get logged-in email
+  const { user } = useAuth(); // <-- use full user object
 
-  const showLogin = !accEmail; // true if user is not logged in
+  const showLogin = !user; // true if user is not logged in
+
+  // Optional: automatic redirect after 3s if not logged in
+  useEffect(() => {
+    if (!user) {
+      const timer = setTimeout(() => navigate("/login"), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [user, navigate]);
 
   return (
     <div className="position-relative">
@@ -34,12 +42,12 @@ const CommunityLayout = () => {
             style={{ width: "400px", maxWidth: "90%" }}
           >
             <h3 className="mb-3">Please login to access the Community page</h3>
-            <button
-              className="btn btn-primary"
-              onClick={() => navigate("/login")}
-            >
+            <button className="btn btn-primary" onClick={() => navigate("/login")}>
               Go to Login
             </button>
+            <p className="mt-2 text-muted" style={{ fontSize: "0.85rem" }}>
+              Redirecting automatically in 3 seconds...
+            </p>
           </div>
         </div>
       )}

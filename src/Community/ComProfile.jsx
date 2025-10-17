@@ -81,8 +81,9 @@ const ComProfile = ({ userId }) => {
 
   return (
     <div className="container py-5">
-      {/* PROFILE CARD */}
-     <div className="d-flex flex-column flex-md-row align-items-center bg-light p-4 rounded shadow-sm mb-5">
+     <div className="align-items-center bg-light p-4 rounded shadow-sm mb-5">
+     
+     <div className="d-flex flex-column flex-md-row ">
   <div className="position-relative me-0 mb-3 mb-md-0">
     <img
       src={profile.image ? `http://localhost:5000/${profile.image}` : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
@@ -107,16 +108,53 @@ const ComProfile = ({ userId }) => {
       onChange={handleImageChange}
     />
   </div>
-  <div className="ms-md-4 text-center text-md-start">
-    <h3 className="fw-bold mb-1">{profile.name}</h3>
-    <p className="mb-1">📞 <strong>{profile.phone}</strong></p>
-    <p className="mb-1">📧 <strong>{profile.email}</strong></p>
-    <p className="mb-1">📍 <strong>{profile.city}</strong></p>
-    <p className="mb-0">💼 <strong>{profile.skills}</strong></p>
-  </div>
+<div className="text-center text-md-start ms-5">
+  <h3 className="fw-bold mb-1">{profile.name}</h3>
 </div>
 
+     </div>
+      <div className="d-flex">
+  <div className="d-flex justify-content-center align-items-start flex-wrap"   style={{
+    position: "relative",
+    top: "-60px",       // moves UP
+    
+  }} >
+          {/* Left side */}
+          <div className="text-start pe-4" style={{ minWidth: "60px", marginLeft: "150px" }}>
+            <p className="mb-2">
+              📍 <strong>{profile.city || "City"}</strong>
+            </p>
+            <p className="mb-0">
+              💼 <strong>{profile.skills || "Skills"}</strong>
+            </p>
+          </div>
 
+          {/* Divider */}
+          <div
+            className="mx-3"
+            style={{
+              width: "2px",
+              backgroundColor: "#dcdcdc",
+              height: "50px",
+            }}
+          ></div>
+
+          {/* Right side */}
+          <div className="text-start ps-4 " style={{ minWidth: "60px" }}>
+            <p className="mb-2 ">
+              📞 <strong>{profile.phone || "Phone"}</strong>
+              <span className="text-success ms-2">✔️</span>
+            </p>
+            <p className="mb-0">
+              📧 <strong>{profile.email || "Email"}</strong>
+              <span className="text-success ms-2">✔️</span>
+            </p>
+          </div>
+        </div>
+
+   
+  </div>
+ </div>
       {/* INPUT GRID */}
       <div className="row g-4 text-start">
         {["name","phone","email","city","skills"].map((field) => (

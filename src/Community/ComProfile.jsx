@@ -95,7 +95,7 @@ const ComProfile = ({ userId }) => {
     />
     <label
       htmlFor="imageUpload"
-      className="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-1"
+      className="position-absolute bottom-0 end-0 bg-light text-secondary border border-1 border-secondary rounded-circle p-1"
       style={{ cursor: "pointer", fontSize: "14px" }}
     >
       ✏️
@@ -109,7 +109,7 @@ const ComProfile = ({ userId }) => {
     />
   </div>
 <div className="text-center text-md-start ms-5">
-  <h3 className="fw-bold mb-1">{profile.name}</h3>
+  <h3 className=" mb-1">{profile.name}</h3>
 </div>
 
      </div>
@@ -122,10 +122,10 @@ const ComProfile = ({ userId }) => {
           {/* Left side */}
           <div className="text-start pe-4" style={{ minWidth: "60px", marginLeft: "150px" }}>
             <p className="mb-2">
-              📍 <strong>{profile.city || "City"}</strong>
+              📍 <span>{profile.city || "City"}</span>
             </p>
             <p className="mb-0">
-              💼 <strong>{profile.skills || "Skills"}</strong>
+              💼 <span>{profile.skills || "Skills"}</span>
             </p>
           </div>
 
@@ -142,11 +142,11 @@ const ComProfile = ({ userId }) => {
           {/* Right side */}
           <div className="text-start ps-4 " style={{ minWidth: "60px" }}>
             <p className="mb-2 ">
-              📞 <strong>{profile.phone || "Phone"}</strong>
+              📞 <span>{profile.phone || "Phone"}</span>
               <span className="text-success ms-2">✔️</span>
             </p>
             <p className="mb-0">
-              📧 <strong>{profile.email || "Email"}</strong>
+              📧 <span>{profile.email || "Email"}</span>
               <span className="text-success ms-2">✔️</span>
             </p>
           </div>

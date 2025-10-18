@@ -40,6 +40,17 @@ app.get('/profile/:userId', async (req, res) => {
   }
 });
 
+// ✅ Get all profiles
+app.get("/profiles", async (req, res) => {
+  try {
+    const profiles = await Profile.find();
+    res.json(profiles);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch profiles" });
+  }
+});
+
+
 app.put('/user/email/:userId', async (req, res) => {
   const { email } = req.body;
   try {
@@ -89,12 +100,28 @@ app.post('/profile/upload/:userId', upload.single('image'), async (req, res) => 
 // Register
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ message: 'Email and password are required' });
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
 
   try {
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: 'User already exists' });
-    if (password.length < 6) return res.status(400).json({ message: 'Password must be at least 6 characters' });
+
+    if (existingUser) {
+      // Specific error response for user already exists
+      return res.status(409).json({
+        message: 'User already exists',
+        error: 'USER_EXISTS'
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        message: 'Password must be at least 6 characters',
+        error: 'WEAK_PASSWORD'
+      });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ email, password: hashedPassword });
@@ -102,16 +129,17 @@ app.post('/register', async (req, res) => {
 
     const { password: pwd, ...safeUser } = newUser._doc;
 
-    // Also create profile automatically
+    // Automatically create profile
     const profile = new Profile({ userId: newUser._id, email: newUser.email });
     await profile.save();
 
     res.status(201).json({ message: 'User registered', user: safeUser });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: 'SERVER_ERROR' });
   }
 });
+
 
 // Login
 app.post('/login', async (req, res) => {

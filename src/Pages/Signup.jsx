@@ -19,20 +19,25 @@ const Signup = () => {
       return;
     }
 
-    try {
-      await axios.post("http://localhost:5000/register", { email, password });
-      setMessage("Account created successfully!");
-      setMessageColor("green");
-      setAccEmail(email);
-      setTimeout(() => navigate("/"), 2000);
-    } catch (error) {
-      if (error.response) {
-        setMessage(error.response.data.message);
-      } else {
-        setMessage("Something went wrong. Try again.");
-      }
-      setMessageColor("red");
+   try {
+  await axios.post("http://localhost:5000/register", { email, password });
+  setMessage("Account created successfully!");
+  setMessageColor("green");
+  setAccEmail(email);
+  setTimeout(() => navigate("/"), 2000);
+} catch (error) {
+  if (error.response) {
+    if (error.response.status === 409) {
+      setMessage("This email is already registered. Please login.");
+    } else {
+      setMessage(error.response.data.message || "Something went wrong. Try again.");
     }
+  } else {
+    setMessage("Something went wrong. Try again.");
+  }
+  setMessageColor("red");
+}
+
   };
 
   return (

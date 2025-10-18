@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { MapPin, Briefcase, Phone, Mail, Pencil } from "lucide-react";
 
 const ComProfile = ({ userId }) => {
   const [profile, setProfile] = useState({
@@ -81,87 +82,126 @@ const ComProfile = ({ userId }) => {
 
   return (
     <div className="container py-5">
-     <div className="align-items-center bg-light p-4 rounded shadow-sm mb-5">
-     
-     <div className="d-flex flex-column flex-md-row ">
-  <div className="position-relative me-0 mb-3 mb-md-0">
-    <img
-      src={profile.image ? `http://localhost:5000/${profile.image}` : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
-      alt="Profile"
-      className="rounded-circle border border-2"
-      width="120"
-      height="120"
-      style={{ objectFit: "cover" }}
-    />
-    <label
-      htmlFor="imageUpload"
-      className="position-absolute bottom-0 end-0 bg-light text-secondary border border-1 border-secondary rounded-circle p-1"
-      style={{ cursor: "pointer", fontSize: "14px" }}
-    >
-      ✏️
-    </label>
-    <input
-      type="file"
-      id="imageUpload"
-      accept="image/*"
-      style={{ display: "none" }}
-      onChange={handleImageChange}
-    />
-  </div>
-<div className="text-center text-md-start ms-5">
-  <h3 className=" mb-1">{profile.name}</h3>
-</div>
+      {/* Profile Header */}
+      <div className="bg-light p-4 rounded shadow-sm mb-5">
+        <div className="d-flex flex-column flex-md-row align-items-center align-items-md-start">
+          {/* Profile Picture */}
+          <div className="position-relative mb-3 mb-md-0 me-md-4">
+            <img
+              src={
+                profile.image
+                  ? `http://localhost:5000/${profile.image}`
+                  : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              }
+              alt="Profile"
+              className="rounded-circle border border-2"
+              width="120"
+              height="120"
+              style={{ objectFit: "cover" }}
+            />
 
-     </div>
-      <div className="d-flex">
-  <div className="d-flex justify-content-center align-items-start flex-wrap"   style={{
-    position: "relative",
-    top: "-60px",       // moves UP
-    
-  }} >
-          {/* Left side */}
-          <div className="text-start pe-4" style={{ minWidth: "60px", marginLeft: "150px" }}>
-            <p className="mb-2">
-              📍 <span>{profile.city || "City"}</span>
-            </p>
-            <p className="mb-0">
-              💼 <span>{profile.skills || "Skills"}</span>
-            </p>
+            {/* 🖊️ Edit Icon */}
+            <label
+              htmlFor="imageUpload"
+              className="position-absolute bottom-0 end-0 bg-white border border-secondary rounded-circle p-1 shadow-sm"
+              style={{
+                cursor: "pointer",
+                width: "28px",
+                height: "28px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Pencil size={14} className="text-secondary" />
+            </label>
+            <input
+              type="file"
+              id="imageUpload"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleImageChange}
+            />
           </div>
 
-          {/* Divider */}
-          <div
-            className="mx-3"
-            style={{
-              width: "2px",
-              backgroundColor: "#dcdcdc",
-              height: "50px",
-            }}
-          ></div>
+          {/* Name and Info */}
+          <div className="flex-grow-1 text-center text-md-start">
+            <h3 className="mb-3">{profile.name || "Your Name"}</h3>
 
-          {/* Right side */}
-          <div className="text-start ps-4 " style={{ minWidth: "60px" }}>
-            <p className="mb-2 ">
-              📞 <span>{profile.phone || "Phone"}</span>
-              <span className="text-success ms-2">✔️</span>
-            </p>
-            <p className="mb-0">
-              📧 <span>{profile.email || "Email"}</span>
-              <span className="text-success ms-2">✔️</span>
-            </p>
+            {/* Info Section */}
+            <div className="d-flex flex-column flex-sm-row justify-content-center justify-content-md-start align-items-center align-items-md-start gap-3">
+              {/* Left Side */}
+              <div className="text-start">
+                <p className="mb-2 d-flex align-items-center">
+                  <span
+                    className="border rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                    style={{ width: "28px", height: "28px" }}
+                  >
+                    <MapPin size={16} />
+                  </span>
+                  <span>{profile.city || "City"}</span>
+                </p>
+
+                <p className="mb-0 d-flex align-items-center">
+                  <span
+                    className="border rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                    style={{ width: "28px", height: "28px" }}
+                  >
+                    <Briefcase size={16} />
+                  </span>
+                  <span>{profile.skills || "Skills"}</span>
+                </p>
+              </div>
+
+              {/* Divider (only on md and up) */}
+              <div
+                className="d-none d-md-block mx-3"
+                style={{
+                  width: "2px",
+                  backgroundColor: "#dcdcdc",
+                  height: "50px",
+                }}
+              ></div>
+
+              {/* Right Side */}
+              <div className="text-start">
+                <p className="mb-2 d-flex align-items-center">
+                  <span
+                    className="border rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                    style={{ width: "28px", height: "28px" }}
+                  >
+                    <Phone size={16} />
+                  </span>
+                  <span>{profile.phone || "Phone"}</span>
+                </p>
+
+                <p className="mb-0 d-flex align-items-center">
+                  <span
+                    className="border rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                    style={{ width: "28px", height: "28px" }}
+                  >
+                    <Mail size={16} />
+                  </span>
+                  <span>{profile.email || "Email"}</span>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-   
-  </div>
- </div>
-      {/* INPUT GRID */}
+      {/* Input Form */}
       <div className="row g-4 text-start">
-        {["name","phone","email","city","skills"].map((field) => (
-          <div key={field} className={`col-12 col-md-${field==="city"||field==="skills"?6:4}`}>
-            <label className="fw-semibold">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+        {["name", "phone", "email", "city", "skills"].map((field) => (
+          <div
+            key={field}
+            className={`col-12 col-md-${field === "city" || field === "skills" ? 6 : 4}`}
+          >
+            <label className="fw-semibold">
+              {field.charAt(0).toUpperCase() + field.slice(1)}
+            </label>
             <input
-              type={field==="email"?"email":"text"}
+              type={field === "email" ? "email" : "text"}
               name={field}
               value={form[field]}
               onChange={handleChange}
@@ -172,7 +212,7 @@ const ComProfile = ({ userId }) => {
         ))}
       </div>
 
-      {/* UPDATE BUTTON */}
+      {/* Update Button */}
       <div className="text-center mt-4">
         <button className="btn btn-primary px-5" onClick={handleUpdate}>
           Update Profile

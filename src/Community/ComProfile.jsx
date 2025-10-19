@@ -3,15 +3,7 @@ import axios from "axios";
 import { MapPin, Briefcase, Phone, Mail, Pencil } from "lucide-react";
 
 const ComProfile = ({ userId }) => {
-  const [profile, setProfile] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    city: "",
-    skills: "",
-    image: null,
-  });
-
+  const [profile, setProfile] = useState(null);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -19,31 +11,40 @@ const ComProfile = ({ userId }) => {
     city: "",
     skills: "",
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Fetch or create profile
+  // Fetch profile
   useEffect(() => {
     if (!userId) return;
 
     const fetchProfile = async () => {
       try {
         const res = await axios.get(`http://localhost:5000/profile/${userId}`);
-        if (res.data) {
-          setProfile(res.data);
-          setForm({
-            name: res.data.name || "",
-            phone: res.data.phone || "",
-            email: res.data.email || "",
-            city: res.data.city || "",
-            skills: res.data.skills || "",
-          });
-        }
+        const data = res.data;
+
+        setProfile(data);
+        setForm({
+          name: data.name || "",
+          phone: data.phone || "",
+          email: data.email || "",
+          city: data.city || "",
+          skills: data.skills || "",
+        });
       } catch (err) {
         console.error("Error fetching profile:", err);
+        setError("Failed to fetch profile");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProfile();
   }, [userId]);
+
+  if (loading) return <p>Loading profile...</p>;
+  if (error) return <p>{error}</p>;
+  if (!profile) return <p>No profile found</p>;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,9 +55,10 @@ const ComProfile = ({ userId }) => {
     try {
       const res = await axios.put(`http://localhost:5000/profile/${userId}`, form);
       setProfile(res.data);
+      alert("Profile updated successfully!");
     } catch (err) {
       console.error("Error updating profile:", err);
-      alert("Failed to update profile.");
+      alert("Failed to update profile");
     }
   };
 
@@ -76,7 +78,7 @@ const ComProfile = ({ userId }) => {
       setProfile(res.data.profile);
     } catch (err) {
       console.error("Error uploading image:", err);
-      alert("Failed to upload image.");
+      alert("Failed to upload image");
     }
   };
 
@@ -100,7 +102,7 @@ const ComProfile = ({ userId }) => {
               style={{ objectFit: "cover" }}
             />
 
-            {/* 🖊️ Edit Icon */}
+            {/* Edit Icon */}
             <label
               htmlFor="imageUpload"
               className="position-absolute bottom-0 end-0 bg-white border border-secondary rounded-circle p-1 shadow-sm"
@@ -128,9 +130,7 @@ const ComProfile = ({ userId }) => {
           <div className="flex-grow-1 text-center text-md-start">
             <h3 className="mb-3">{profile.name || "Your Name"}</h3>
 
-            {/* Info Section */}
             <div className="d-flex flex-column flex-sm-row justify-content-center justify-content-md-start align-items-center align-items-md-start gap-3">
-              {/* Left Side */}
               <div className="text-start">
                 <p className="mb-2 d-flex align-items-center">
                   <span
@@ -149,21 +149,19 @@ const ComProfile = ({ userId }) => {
                   >
                     <Briefcase size={16} />
                   </span>
-                  <span>{profile.skills || "Skills"}</span>
+                  <span>
+                    {Array.isArray(profile.skills)
+                      ? profile.skills.join(", ")
+                      : profile.skills || "Skills"}
+                  </span>
                 </p>
               </div>
 
-              {/* Divider (only on md and up) */}
               <div
                 className="d-none d-md-block mx-3"
-                style={{
-                  width: "2px",
-                  backgroundColor: "#dcdcdc",
-                  height: "50px",
-                }}
+                style={{ width: "2px", backgroundColor: "#dcdcdc", height: "50px" }}
               ></div>
 
-              {/* Right Side */}
               <div className="text-start">
                 <p className="mb-2 d-flex align-items-center">
                   <span

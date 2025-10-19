@@ -27,11 +27,11 @@ app.get('/profile/:userId', async (req, res) => {
     const { userId } = req.params;
     let profile = await Profile.findOne({ userId });
 
-    if (!profile) {
-      // Create default profile if it doesn't exist
-      profile = new Profile({ userId, name: "", email: "", phone: "", city: "", skills: "" });
-      await profile.save();
-    }
+  if (!profile) {
+  // Profile not found
+  return res.status(404).json({ message: "Profile not found" });
+}
+
 
     res.status(200).json(profile);
   } catch (err) {
@@ -40,15 +40,27 @@ app.get('/profile/:userId', async (req, res) => {
   }
 });
 
-// ✅ Get all profiles
 app.get("/profiles", async (req, res) => {
   try {
-    const profiles = await Profile.find();
+    // Only return profiles where at least the 'name' field is not empty
+    const profiles = await Profile.find({ name: { $ne: "" } });
     res.json(profiles);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch profiles" });
   }
 });
+
+// DELETE empty profiles (temporary, for cleanup)
+app.delete("/cleanup-empty-profiles", async (req, res) => {
+  try {
+    const result = await Profile.deleteMany({ name: "" });
+    res.status(200).json({ message: "Empty profiles deleted", deletedCount: result.deletedCount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to delete empty profiles" });
+  }
+});
+
 
 
 app.put('/user/email/:userId', async (req, res) => {

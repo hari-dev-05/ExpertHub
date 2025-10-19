@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { MapPin, Briefcase, Phone, Mail } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+
 
 const ComPeople = () => {
   const [profiles, setProfiles] = useState([]);
+const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfiles = async () => {
@@ -132,13 +136,15 @@ const ComPeople = () => {
                   {user.email || "Email"}
                 </p>
               </div>
-              <button
+<button
   className="btn btn-sm btn-primary mt-2"
   style={{ borderRadius: "12px" }}
-  onClick={() => alert(`Connect request sent to ${user.name}`)}
+  onClick={() => navigate(`/connected/${user.userId}`)}
 >
   Connect
 </button>
+
+
             </div>
           ))}
 

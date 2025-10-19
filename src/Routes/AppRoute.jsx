@@ -13,6 +13,7 @@ import CommunityLayout from "../Community/CommunityLayout"; // layout with <Outl
 import ComHome from "../Community/ComHome.jsx";
 import ComProfile from "../Community/ComProfile.jsx";
 import ComPeople from "../Community/ComPeople.jsx";
+import ConnectedPerson from "../Connect/ConnectedPerson.jsx";
 
 const AppRoute = () => {
   const location = useLocation();
@@ -31,6 +32,9 @@ const AppRoute = () => {
         <Route path="/account" element={<Account />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/connected/:userId" element={<ConnectedPerson />} />
+
+
 
         {/* COMMUNITY ROUTES with nested layout */}
         <Route path="/community" element={<CommunityLayout />}>

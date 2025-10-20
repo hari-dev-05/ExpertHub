@@ -4,12 +4,18 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUserState] = useState(null); // store full user object
+const [profileEmail, setProfileEmail] = useState(null);
 
   // Load user from localStorage on mount
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUserState(JSON.parse(storedUser));
   }, []);
+
+useEffect(() => {
+  console.log("Updated profileEmail:", profileEmail);
+}, [profileEmail]); // ✅ runs whenever profileEmail changes
+
 
   // Save user to state and localStorage
   const setUser = (userObj) => {
@@ -24,7 +30,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
+    <AuthContext.Provider value={{ user, setUser, logout ,profileEmail, setProfileEmail }}>
       {children}
     </AuthContext.Provider>
   );

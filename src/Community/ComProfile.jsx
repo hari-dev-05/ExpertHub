@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { MapPin, Briefcase, Phone, Mail, Pencil } from "lucide-react";
+import { useAuth } from "../Pages/AuthContext";
+
+
+
 
 const ComProfile = ({ userId }) => {
   const [profile, setProfile] = useState(null);
+  const {setProfileEmail} = useAuth();
+    
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -31,6 +37,7 @@ const ComProfile = ({ userId }) => {
           city: data.city || "",
           skills: data.skills || "",
         });
+         setProfileEmail(data.email)
       } catch (err) {
         console.error("Error fetching profile:", err);
         setError("Failed to fetch profile");

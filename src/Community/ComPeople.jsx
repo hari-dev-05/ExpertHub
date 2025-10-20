@@ -2,18 +2,19 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { MapPin, Briefcase, Phone, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../Pages/AuthContext";
 
 
 const ComPeople = () => {
   const [profiles, setProfiles] = useState([]);
 const navigate = useNavigate();
-
+const {profileEmail} = useAuth();
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
         const res = await axios.get("http://localhost:5000/profiles");
-        setProfiles(res.data);
+        const filteredData = res.data.filter((p)=>(p.email != profileEmail))
+        setProfiles(filteredData);
       } catch (err) {
         console.error("Error fetching profiles:", err);
       }

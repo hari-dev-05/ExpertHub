@@ -9,18 +9,27 @@ const ComPeople = () => {
   const [profiles, setProfiles] = useState([]);
 const navigate = useNavigate();
 const {profileEmail} = useAuth();
-  useEffect(() => {
-    const fetchProfiles = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/profiles");
-        const filteredData = res.data.filter((p)=>(p.email != profileEmail))
-        setProfiles(filteredData);
-      } catch (err) {
-        console.error("Error fetching profiles:", err);
-      }
-    };
-    fetchProfiles();
-  }, []);
+useEffect(() => {
+  if (!profileEmail) return; // wait until profileEmail is ready
+
+  const fetchProfiles = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/profiles");
+
+      // Filter out the logged-in user
+      const filteredData = res.data.filter(
+        (p) => p.email && p.email !== profileEmail
+      );
+
+      setProfiles(filteredData);
+    } catch (err) {
+      console.error("Error fetching profiles:", err);
+    }
+  };
+
+  fetchProfiles();
+}, [profileEmail]); // ✅ runs again when profileEmail is restored
+
 
   return (
     <div

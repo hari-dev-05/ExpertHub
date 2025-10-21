@@ -7,10 +7,17 @@ export const AuthProvider = ({ children }) => {
 const [profileEmail, setProfileEmail] = useState(null);
 
   // Load user from localStorage on mount
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUserState(JSON.parse(storedUser));
-  }, []);
+useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    const parsedUser = JSON.parse(storedUser);
+    setUserState(parsedUser);
+
+    // ✅ ADD THIS LINE
+    if (parsedUser.email) setProfileEmail(parsedUser.email);
+  }
+}, []);
+
 
 useEffect(() => {
   console.log("Updated profileEmail:", profileEmail);

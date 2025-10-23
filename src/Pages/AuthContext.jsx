@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { connectSocket, disconnectSocket } from "../Community/socket";
 
 const AuthContext = createContext();
 
@@ -15,6 +16,9 @@ useEffect(() => {
 
     // ✅ ADD THIS LINE
     if (parsedUser.email) setProfileEmail(parsedUser.email);
+
+     // ✅ Connect socket globally
+    if (parsedUser._id) connectSocket(parsedUser._id);
   }
 }, []);
 
@@ -28,12 +32,17 @@ useEffect(() => {
   const setUser = (userObj) => {
     setUserState(userObj);
     localStorage.setItem("user", JSON.stringify(userObj));
+
+     // ✅ Connect socket for this user
+  if (userObj._id) connectSocket(userObj._id);
   };
 
   // Optional: clear user on logout
   const logout = () => {
     setUserState(null);
     localStorage.removeItem("user");
+     // ✅ Disconnect socket
+  disconnectSocket();
   };
 
   return (

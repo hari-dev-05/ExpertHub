@@ -8,6 +8,20 @@ const path = require('path');
 
 const app = express();
 
+const http = require('http');
+const { Server } = require('socket.io');
+
+// Create HTTP server and wrap Express app
+const server = http.createServer(app);
+
+// Setup Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173", // frontend URL
+    methods: ["GET", "POST"]
+  }
+});
+
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
@@ -27,11 +41,9 @@ app.get('/profile/:userId', async (req, res) => {
     const { userId } = req.params;
     let profile = await Profile.findOne({ userId });
 
-  if (!profile) {
-  // Profile not found
-  return res.status(404).json({ message: "Profile not found" });
-}
-
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
 
     res.status(200).json(profile);
   } catch (err) {
@@ -42,7 +54,6 @@ app.get('/profile/:userId', async (req, res) => {
 
 app.get("/profiles", async (req, res) => {
   try {
-    // Only return profiles where at least the 'name' field is not empty
     const profiles = await Profile.find({ name: { $ne: "" } });
     res.json(profiles);
   } catch (err) {
@@ -50,7 +61,7 @@ app.get("/profiles", async (req, res) => {
   }
 });
 
-// DELETE empty profiles (temporary, for cleanup)
+// DELETE empty profiles
 app.delete("/cleanup-empty-profiles", async (req, res) => {
   try {
     const result = await Profile.deleteMany({ name: "" });
@@ -61,8 +72,7 @@ app.delete("/cleanup-empty-profiles", async (req, res) => {
   }
 });
 
-
-
+// Update email
 app.put('/user/email/:userId', async (req, res) => {
   const { email } = req.body;
   try {
@@ -77,7 +87,6 @@ app.put('/user/email/:userId', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
 
 // Update profile
 app.put('/profile/:userId', async (req, res) => {
@@ -121,7 +130,6 @@ app.post('/register', async (req, res) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      // Specific error response for user already exists
       return res.status(409).json({
         message: 'User already exists',
         error: 'USER_EXISTS'
@@ -141,7 +149,6 @@ app.post('/register', async (req, res) => {
 
     const { password: pwd, ...safeUser } = newUser._doc;
 
-    // Automatically create profile
     const profile = new Profile({ userId: newUser._id, email: newUser.email });
     await profile.save();
 
@@ -151,7 +158,6 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: 'SERVER_ERROR' });
   }
 });
-
 
 // Login
 app.post('/login', async (req, res) => {
@@ -167,7 +173,6 @@ app.post('/login', async (req, res) => {
 
     const { password: pwd, ...safeUser } = user._doc;
 
-    // Ensure profile exists
     let profile = await Profile.findOne({ userId: user._id });
     if (!profile) {
       profile = new Profile({ userId: user._id, email: user.email });
@@ -181,6 +186,40 @@ app.post('/login', async (req, res) => {
   }
 });
 
+const connectedUsers = {}; // userId => [socketId, ...]
+
+io.on("connection", (socket) => {
+  console.log("🟢 A user connected:", socket.id);
+
+  socket.on("join", (userId) => {
+    if (!connectedUsers[userId]) connectedUsers[userId] = [];
+    connectedUsers[userId].push(socket.id);
+    console.log(`User ${userId} connected with socket ${socket.id}`);
+  });
+
+  socket.on("sendMessage", ({ senderId, receiverId, text }) => {
+    console.log(`Message from ${senderId} to ${receiverId}: ${text}`);
+
+    // Send message to all sockets of the receiver
+    const receiverSockets = connectedUsers[receiverId] || [];
+    receiverSockets.forEach(sockId => {
+      io.to(sockId).emit("receiveMessage", { senderId, text });
+    });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("🔴 A user disconnected:", socket.id);
+
+    // Remove socket from all users
+    for (const [userId, sockets] of Object.entries(connectedUsers)) {
+      connectedUsers[userId] = sockets.filter(id => id !== socket.id);
+      if (connectedUsers[userId].length === 0) delete connectedUsers[userId];
+    }
+  });
+});
+
+
+
 // ========================= START SERVER ========================= //
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

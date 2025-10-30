@@ -23,6 +23,7 @@ useEffect(() => {
 
       setProfiles(filteredData);
     } catch (err) {
+      
       console.error("Error fetching profiles:", err);
     }
   };

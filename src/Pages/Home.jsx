@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useRef } from "react";
 import "../index.css";
-import { motion } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 
 const Home = () => {
   const items = [
@@ -173,3 +173,5 @@ const Home = () => {
 };
 
 export default Home;
+
+

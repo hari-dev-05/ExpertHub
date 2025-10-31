@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "./AuthContext"; // make sure this is the updated AuthContext
+import BlurText from "./BlurText";
 
 function Login() {
   const navigate = useNavigate();
@@ -40,6 +41,10 @@ function Login() {
     }
   };
 
+  const handleAnimationComplete = () => {
+    console.log("Animation completed!");
+  };
+
   return (
     <div
       className="d-flex justify-content-center align-items-center vh-100"
@@ -61,9 +66,14 @@ function Login() {
           color: "white",
         }}
       >
-        <h2 className="fw-bold mb-4" style={{ letterSpacing: "1px" }}>
-          Welcome Back
-        </h2>
+        <BlurText
+          text="WELCOME BACK, how are you today"
+          delay={150}
+          animateBy="words"
+          direction="top"
+          onAnimationComplete={handleAnimationComplete}
+          className="text-2xl fw-bold mb-4"
+        />
 
         <input
           type="email"

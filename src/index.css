@@ -1,3 +1,33 @@
+/* Imported font for BlurText */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&display=swap');
+
+:root{
+  --font-display: 'Playfair Display', serif;
+}
+
+.playfair {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem; /* slightly larger for headings */
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: #ffffff;
+  text-shadow: 0 3px 14px rgba(0,0,0,0.35);
+}
+
+/* Slightly larger on wider screens */
+@media (min-width: 768px) {
+  .playfair {
+    font-size: 1.35rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .playfair {
+    font-size: 1.6rem;
+  }
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
 
 html, body, #root {

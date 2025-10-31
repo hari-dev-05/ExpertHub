@@ -1,67 +1,173 @@
 import React from "react";
+import "../index.css";
+import { motion } from "framer-motion";
 
 const Home = () => {
   const items = [
     {
-      title: "Learn",
-      text: `Explore new skills from people around the community. Dive deep into
-      tutorials, guides, and discussions shared by learners worldwide. Build
-      expertise at your own pace and expand your horizons. Engage with
-      content that matches your curiosity and grow your knowledge base every day.`
+      blue: "Start your journey",
+      black: "by exploring new skills and ideas.",
+      desc: "Discover new areas of knowledge and build the foundation for your personal and professional growth through interactive learning."
     },
     {
-      title: "Teach",
-      text: `Share your knowledge and help others grow with your skills. Whether
-      it’s coding, design, or any other skill, your guidance can make a
-      difference. Write articles, create tutorials, or conduct live sessions
-      to help learners achieve their goals. Empower others through teaching.`
+      blue: "Share your knowledge",
+      black: "and help others grow.",
+      desc: "Empower others by sharing what you’ve learned. Your insights can inspire and guide learners who are just beginning their path."
     },
     {
-      title: "Connect",
-      text: `Build strong connections with learners and teachers worldwide. Join
-      discussion groups, participate in events, and collaborate on projects.
-      Networking is the key to growth. Share ideas, ask questions, and
-      establish meaningful relationships within the community.`
+      blue: "Meet learners",
+      black: "and mentors from around the world.",
+      desc: "Connect globally with people who share your interests. Learn from diverse perspectives and make valuable friendships."
     },
     {
-      title: "Grow",
-      text: `Learn, teach, and grow together in a thriving community. Apply
-      your skills to real-world challenges, receive feedback, and improve
-      continuously. Celebrate milestones and achievements together. The
-      journey of growth is better when shared with others.`
+      blue: "Develop together",
+      black: "and reach new milestones.",
+      desc: "Collaborate with peers and mentors to overcome challenges and celebrate achievements as a team."
     }
   ];
 
   return (
-    <div className="container my-5">
-      <h1 className="fw-bold text-center mb-5">Welcome to SkillBridge</h1>
-      <p className="lead text-center mb-5">
-        A community where everyone can learn, teach, and grow together.
-      </p>
-
-      {/* Zig-zag timeline */}
-      {items.map((item, index) => (
-        <div
-          key={index}
-          className="d-flex mb-4"
-          style={{
-            justifyContent: index % 2 === 0 ? "flex-start" : "flex-end",
-            minHeight: "180px", // increased height for content
-          }}
+    <div className="homebackground">
+      <div className="container p-5" style={{ position: 'relative', zIndex: 2 }}>
+        <motion.h1 
+          className="fw-bold text-center mb-5 text-white"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
         >
-          <div
-            style={{
-              width: "50%",
-              backgroundColor: "#f1f5f9",
-              padding: "25px",
-              borderRadius: "8px",
-            }}
+          Welcome to SkillBridge
+        </motion.h1>
+        <motion.p 
+          className="lead text-center mb-5 text-white"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+        >
+          A community where everyone can learn, teach, and grow together.
+        </motion.p>
+
+        {items.map((item, index) => (
+          <motion.div
+            className="section-box"
+            key={index}
+            initial={{ opacity: 0, y: 100 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{ scale: 1.02 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h5 className="fw-bold">{item.title}</h5>
-            <p className="mb-0" style={{ lineHeight: "1.6" }}>{item.text}</p>
-          </div>
-        </div>
-      ))}
+            <div className="row align-items-center">
+              {index % 2 === 0 ? (
+                <>
+                  {/* Text first */}
+                  <div className="col-md-6">
+                    <h2 className="fw-bold mb-3 display-5">
+                      <span style={{ color: "#0d6efd" }}>{item.blue}</span>{" "}
+                      <span style={{ color: "#000" }}>{item.black}</span>
+                    </h2>
+                    <p className="lead">{item.desc}</p>
+                  </div>
+
+                  {/* Image section */}
+                  <div className="col-md-6 text-center">
+                    <div
+                      className="d-flex justify-content-center align-items-center"
+                      style={{ gap: "10px" }}
+                    >
+                      <img
+                        src="/newimg.jpg"
+                        alt="main visual"
+                        className="img-fluid rounded shadow-sm"
+                        style={{
+                          width: "50%",
+                          height: "300px",
+                          objectFit: "cover"
+                        }}
+                      />
+                      <div
+                        className="d-flex flex-column justify-content-between"
+                        style={{ height: "300px", width: "50%", gap: "10px" }}
+                      >
+                        <img
+                          src="/newimg.jpg"
+                          alt="top visual"
+                          className="img-fluid rounded shadow-sm"
+                          style={{
+                            height: "48%",
+                            objectFit: "cover"
+                          }}
+                        />
+                        <img
+                          src="/newimg.jpg"
+                          alt="bottom visual"
+                          className="img-fluid rounded shadow-sm"
+                          style={{
+                            height: "48%",
+                            objectFit: "cover"
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Image first */}
+                  <div className="col-md-6 text-center">
+                    <div
+                      className="d-flex justify-content-center align-items-center"
+                      style={{ gap: "10px" }}
+                    >
+                      <img
+                        src="/newimg.jpg"
+                        alt="main visual"
+                        className="img-fluid rounded shadow-sm"
+                        style={{
+                          width: "50%",
+                          height: "300px",
+                          objectFit: "cover"
+                        }}
+                      />
+                      <div
+                        className="d-flex flex-column justify-content-between"
+                        style={{ height: "300px", width: "50%", gap: "10px" }}
+                      >
+                        <img
+                          src="/newimg.jpg"
+                          alt="top visual"
+                          className="img-fluid rounded shadow-sm"
+                          style={{
+                            height: "48%",
+                            objectFit: "cover"
+                          }}
+                        />
+                        <img
+                          src="/newimg.jpg"
+                          alt="bottom visual"
+                          className="img-fluid rounded shadow-sm"
+                          style={{
+                            height: "48%",
+                            objectFit: "cover"
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Text second */}
+                  <div className="col-md-6">
+                    <h2 className="fw-bold mb-3 display-5">
+                      <span style={{ color: "#0d6efd" }}>{item.blue}</span>{" "}
+                      <span style={{ color: "#000" }}>{item.black}</span>
+                    </h2>
+                    <p className="lead">{item.desc}</p>
+                  </div>
+                </>
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 };

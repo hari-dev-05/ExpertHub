@@ -97,8 +97,8 @@ const ConnectedPerson = () => {
 
   return (
     <div
-      className="container d-flex flex-column border rounded shadow-sm p-0"
-      style={{ maxWidth: "600px", height: "80vh", backgroundColor: "#f9fafb" }}
+      className="container d-flex flex-column border rounded  shadow-sm p-0"
+      style={{ maxWidth: "600px", height: "80vh",marginTop:"100px", backgroundColor: "#f9fafb" }}
     >
       {/* Header */}
       <div

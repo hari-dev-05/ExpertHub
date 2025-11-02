@@ -1,0 +1,111 @@
+.motion-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #0a0a0a;
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  color: #fff;
+}
+
+.logo-icon {
+  background: #111;
+  color: #ffeb3b; /* Yellow logo text */
+  font-weight: 700;
+  font-size: 1.2rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(255, 235, 59, 0.3);
+  transition: all 0.3s ease;
+}
+
+.logo-icon:hover {
+  box-shadow: 0 0 18px rgba(255, 235, 59, 0.6);
+  transform: scale(1.05);
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  transition: all 0.4s ease;
+}
+
+.nav-link {
+  position: relative;
+  color: #bbb;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #ffeb3b;
+}
+
+/* 🔥 Active Link Animation (Yellow + Smooth) */
+.active-link {
+  color: #ffeb3b;
+  font-weight: 600;
+}
+
+.active-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  height: 2px;
+  width: 0%;
+  background-color: #ffeb3b;
+  border-radius: 4px;
+  animation: underlineExpand 0.4s ease forwards;
+  box-shadow: 0 0 8px rgba(255, 235, 59, 0.5);
+}
+
+/* ✨ Animation */
+@keyframes underlineExpand {
+  from {
+    width: 0%;
+    opacity: 0;
+  }
+  to {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+/* Mobile toggle */
+.menu-toggle {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #111;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 200px;
+    padding: 1rem;
+    transform: translateY(-20px);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .nav-links.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

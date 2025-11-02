@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "./AuthContext"; // make sure this is the updated AuthContext
-import BlurText from "./BlurText";
+import { useAuth } from "./AuthContext";
+import "../css/Login.css";
 
 function Login() {
   const navigate = useNavigate();
-  const { setUser } = useAuth(); // store full user object
+  const { setUser } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,15 +22,15 @@ function Login() {
 
     try {
       const res = await axios.post("http://localhost:5000/login", { email, password });
-
-      // store the full user object in context + localStorage
       setUser(res.data.user);
-
       setMessage(res.data.message);
       setMessageColor("green");
 
-      // navigate to home after login
-      setTimeout(() => navigate("/"), 1500);
+      // Smooth navigation transition
+      document.body.classList.add("fade-out");
+      setTimeout(() => {
+        navigate("/");
+      }, 400);
     } catch (error) {
       if (error.response) {
         setMessage(error.response.data.message);
@@ -41,95 +41,83 @@ function Login() {
     }
   };
 
-  const handleAnimationComplete = () => {
-    console.log("Animation completed!");
-  };
-
   return (
-    <div
-      className="d-flex justify-content-center align-items-center vh-100"
-      style={{
-        backgroundImage: `url("/newimg.jpg")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      <div
-        className="text-center shadow-lg p-5 rounded-4"
-        style={{
-          width: "400px",
-          minHeight: "420px",
-          background: "rgba(255, 255, 255, 0.15)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          color: "white",
-        }}
-      >
-        <BlurText
-          text="WELCOME BACK, how are you today"
-          delay={150}
-          animateBy="words"
-          direction="top"
-          onAnimationComplete={handleAnimationComplete}
-          className="text-2xl fw-bold mb-4"
-        />
-
-        <input
-          type="email"
-          placeholder="Email Address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="form-control mx-auto mb-4 bg-transparent border-0 border-bottom text-white rounded-0 shadow-none"
-          style={{
-            width: "80%",
-            borderBottom: "1px solid rgba(255,255,255,0.6)",
-          }}
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="form-control mx-auto mb-4 bg-transparent border-0 border-bottom text-white rounded-0 shadow-none"
-          style={{
-            width: "80%",
-            borderBottom: "1px solid rgba(255,255,255,0.6)",
-          }}
-        />
-
-        <button
-          onClick={handleLogin}
-          className="btn fw-semibold text-white rounded-pill py-2"
-          style={{
-            width: "80%",
-            background: "rgba(0, 123, 255, 0.7)",
-            backdropFilter: "blur(5px)",
-            transition: "0.3s",
-          }}
-          onMouseEnter={(e) => (e.target.style.background = "rgba(0, 123, 255, 0.9)")}
-          onMouseLeave={(e) => (e.target.style.background = "rgba(0, 123, 255, 0.7)")}
-        >
-          Login
-        </button>
-
-        {message && (
-          <p className="mt-3 text-center" style={{ color: messageColor }}>
-            {message}
+    <div className="login-page">
+      {/* Left Section - Form */}
+      <div className="login-left">
+        <div className="login-box">
+          <h2>Welcome back!</h2>
+          <p className="subtitle">
+            Simplify your workflow and boost your productivity with{" "}
+            <strong>Expert Hub</strong>. Get started for free.
           </p>
-        )}
 
-        <p className="mt-4" style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.8)" }}>
-          Don’t have an account?{" "}
-          <button
-            onClick={() => navigate("/signup")}
-            className="btn p-0 border-0 bg-transparent"
-            style={{ color: "#00b4ff", textDecoration: "underline" }}
-          >
-            Sign up
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input-field"
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input-field"
+          />
+
+          <div className="forgot-password">Forgot Password?</div>
+
+          <button onClick={handleLogin} className="login-btn">
+            Login
           </button>
-        </p>
+
+          {message && (
+            <p className="message" style={{ color: messageColor }}>
+              {message}
+            </p>
+          )}
+
+          <div className="divider">
+            <span>or continue with</span>
+          </div>
+
+          <div className="social-buttons">
+            <button className="social-icon google">
+              <i className="fa-brands fa-google"></i>
+            </button>
+            <button className="social-icon apple">
+              <i className="fa-brands fa-apple"></i>
+            </button>
+            <button className="social-icon facebook">
+              <i className="fa-brands fa-facebook-f"></i>
+            </button>
+          </div>
+
+          <p className="register-text">
+            Not a member?{" "}
+            <button
+              onClick={() => {
+                document.body.classList.add("fade-out");
+                setTimeout(() => navigate("/signup"), 400);
+              }}
+              className="register-link"
+            >
+              Register now
+            </button>
+          </p>
+        </div>
+      </div>
+
+      {/* Right Section - Illustration */}
+      <div className="login-right">
+        <img src="/illustratio.jpg" alt="illustration" className="login-illustration" />
+        <h3>
+          Make your work easier and organized <br />
+          with <strong>Expert Hub</strong>
+        </h3>
       </div>
     </div>
   );

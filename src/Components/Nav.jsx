@@ -3,9 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../Pages/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { useAuth } from "../Pages/AuthContext";
 import "../css/Nav.css";
 
 

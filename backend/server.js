@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const User = require('./mongo');
+const Message = require("./message");
+
 const bcrypt = require('bcrypt');
 const Profile = require('./profile');
 const multer = require('multer');
@@ -158,6 +160,37 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: 'SERVER_ERROR' });
   }
 });
+//socket
+app.get("/messages/:user1/:user2", async (req, res) => {
+  const { user1, user2 } = req.params;
+  const messages = await Message.find({
+    $or: [
+      { senderId: user1, receiverId: user2 },
+      { senderId: user2, receiverId: user1 },
+    ],
+  }).sort({ timestamp: 1 });
+  res.json(messages);
+});
+
+
+// 🧹 Delete all messages between two users
+app.delete("/messages/:user1/:user2", async (req, res) => {
+  try {
+    const { user1, user2 } = req.params;
+    const result = await Message.deleteMany({
+      $or: [
+        { senderId: user1, receiverId: user2 },
+        { senderId: user2, receiverId: user1 },
+      ],
+    });
+    res.json({ message: "Chat cleared successfully", deletedCount: result.deletedCount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error clearing chat" });
+  }
+});
+
+
 
 // Login
 app.post('/login', async (req, res) => {
@@ -191,21 +224,40 @@ const connectedUsers = {}; // userId => [socketId, ...]
 io.on("connection", (socket) => {
   console.log("🟢 A user connected:", socket.id);
 
-  socket.on("join", (userId) => {
-    if (!connectedUsers[userId]) connectedUsers[userId] = [];
-    connectedUsers[userId].push(socket.id);
-    console.log(`User ${userId} connected with socket ${socket.id}`);
+socket.on("join", async (userId) => {
+  if (!connectedUsers[userId]) connectedUsers[userId] = [];
+  connectedUsers[userId].push(socket.id);
+  console.log(`User ${userId} connected with socket ${socket.id}`);
+
+  // Send undelivered messages
+  const undelivered = await Message.find({ receiverId: userId, delivered: false });
+  undelivered.forEach(async (msg) => {
+    io.to(socket.id).emit("receiveMessage", { senderId: msg.senderId, text: msg.text });
+    msg.delivered = true;
+    await msg.save();
   });
+});
 
-  socket.on("sendMessage", ({ senderId, receiverId, text }) => {
-    console.log(`Message from ${senderId} to ${receiverId}: ${text}`);
 
-    // Send message to all sockets of the receiver
-    const receiverSockets = connectedUsers[receiverId] || [];
+socket.on("sendMessage", async ({ senderId, receiverId, text }) => {
+  console.log(`Message from ${senderId} to ${receiverId}: ${text}`);
+
+  // 1️⃣ Save to database
+  const newMsg = new Message({ senderId, receiverId, text });
+  await newMsg.save();
+
+  // 2️⃣ If receiver is online, deliver instantly
+  const receiverSockets = connectedUsers[receiverId] || [];
+  if (receiverSockets.length > 0) {
     receiverSockets.forEach(sockId => {
       io.to(sockId).emit("receiveMessage", { senderId, text });
     });
-  });
+
+    // mark as delivered
+    newMsg.delivered = true;
+    await newMsg.save();
+  }
+});
 
   socket.on("disconnect", () => {
     console.log("🔴 A user disconnected:", socket.id);

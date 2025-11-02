@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../Pages/AuthContext"; // ✅ import AuthContext
-
+import ForgetPass from "../Pages/ForgetPass.jsx";
 import Nav from "../Components/Nav.jsx";
 import Home from "../Pages/Home";
 import Account from "../Pages/Account";
@@ -33,7 +33,7 @@ const AppRoute = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/connected/:userId" element={<ConnectedPerson />} />
-
+        <Route path="/forget" element={<ForgetPass />} />
 
 
         {/* COMMUNITY ROUTES with nested layout */}

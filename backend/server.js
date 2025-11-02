@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const User = require('./mongo');
 const Message = require("./message");
+const nodemailer = require("nodemailer");
+
 
 const bcrypt = require('bcrypt');
 const Profile = require('./profile');
@@ -117,6 +119,79 @@ app.post('/profile/upload/:userId', upload.single('image'), async (req, res) => 
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+
+
+app.post("/send-otp", async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: "Email is required" });
+
+  // Generate random 6-digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000);
+
+  try {
+    // Configure mail transporter
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "demproj8@gmail.com", // your Gmail
+        pass: "ctjajkkdxisqcfwz",    // your 16-character app password
+      },
+    });
+    // ========================= RESET PASSWORD ========================= //
+app.post("/reset-password", async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  if (!email || !newPassword) {
+    return res.status(400).json({ message: "Email and new password required" });
+  }
+
+  try {
+    // Find existing user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user password
+    user.password = hashedPassword;
+    await user.save();
+
+    console.log(`🔑 Password updated for ${email}`);
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("❌ Error resetting password:", error);
+    res.status(500).json({ message: "Server error while resetting password" });
+  }
+});
+
+
+    // Define email content
+    const mailOptions = {
+      from: "demproj8@gmail.com",
+      to: email,
+      subject: "Your ExpertHub OTP Code",
+      text: `Your OTP code is ${otp}. It is valid for 5 minutes.`,
+    };
+
+    // Send email
+    await transporter.sendMail(mailOptions);
+
+    console.log(`✅ OTP sent to ${email}: ${otp}`);
+    res.status(200).json({ message: "OTP sent successfully", otp }); // return OTP for now (testing)
+  } catch (err) {
+    console.error("❌ Error sending OTP:", err);
+    res.status(500).json({ message: "Failed to send OTP" });
+  }
+});
+
+
+
+
+
 
 // ========================= AUTH ROUTES ========================= //
 

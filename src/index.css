@@ -1,25 +1,62 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+:root {
+  --font-display: 'Playfair Display', serif;
+}
 
-html, body, #root {
+/* ========== Playfair Font Styling ========== */
+.playfair {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: #ffffff;
+  text-shadow: 0 3px 14px rgba(0, 0, 0, 0.35)
+}
+@media (min-width: 768px) {
+  .playfair {
+    font-size: 1.35rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .playfair {
+    font-size: 1.6rem;
+  }
+}
+
+/* ========== Global Layout ========== */
+html,
+body,
+#root {
   height: 100%;
   overflow-y: auto;
   overscroll-behavior: none;
   font-family: 'Outfit', sans-serif;
+  background: #0f172a;
+  color: #e6e9ef;
 }
 
-html::-webkit-scrollbar, body::-webkit-scrollbar, #root::-webkit-scrollbar {
+/* Hide scrollbars */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#root::-webkit-scrollbar {
   display: none;
 }
 
-html, body, #root {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;     /* Firefox */
-}
-.blur-sm {
-  filter: blur(2px);
-  pointer-events: none; /* optional to prevent interaction behind modal */
+html,
+body,
+#root {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
+/* Blur effect for modals */
+.blur-sm {
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+/* ========== Home Background ========== */
 .homebackground {
   background-image: url('/newimg.jpg');
   background-size: cover;
@@ -27,7 +64,7 @@ html, body, #root {
   background-attachment: fixed;
   background-repeat: no-repeat;
   min-height: 100vh;
-  padding-top: 100px;  /* Increased padding to account for fixed navbar */
+  padding-top: 100px;
   padding-bottom: 60px;
   position: relative;
 }
@@ -40,13 +77,13 @@ html, body, #root {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
-  z-index: 1;
+  z-index: -1;
 }
 
-/* Spacing and box styling for each section */
+/* ========== Section Styling ========== */
 .section-box {
-  margin: 150px 0;          /* space between sections */
-  padding: 80px 100px;      /* space inside each section (left/right/top/bottom) */
+  margin: 150px 0;
+  padding: 80px 100px;
   background: linear-gradient(135deg, rgba(49, 59, 85, 0.95), rgba(33, 41, 63, 0.95));
   backdrop-filter: blur(10px);
   border-radius: 12px;
@@ -85,6 +122,7 @@ html, body, #root {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
 }
 
+/* ========== Floating Animation ========== */
 @keyframes float {
   0% {
     transform: translateY(0px);
@@ -110,22 +148,19 @@ html, body, #root {
   filter: drop-shadow(0 0 0.5em rgba(96, 165, 250, 0.5));
 }
 
-/* Modern Navbar Styles */
+/* ========== Navbar ========== */
 .navbar {
   position: fixed !important;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 9999 !important; /* Force it above overlays */
-  background: rgba(15, 23, 42, 0.95) !important; /* Slight transparency only */
-}
-.homebackground::before {
-  z-index: -1 !important;  /* pushes it fully behind everything */
+  z-index: 9999 !important;
+  background: rgba(15, 23, 42, 0.95) !important;
 }
 
 .navbar-brand {
   font-weight: 700;
-  color: rgb(255, 255, 255) !important;
+  color: #fff !important;
   font-size: 1.5rem;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
@@ -137,7 +172,7 @@ html, body, #root {
 
 .nav-link {
   position: relative;
-  color: rgb(255, 255, 255) !important;
+  color: #fff !important;
   font-weight: 600;
   font-size: 1rem;
   letter-spacing: 0.3px;
@@ -147,7 +182,6 @@ html, body, #root {
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
 }
 
-
 .nav-link::after {
   content: '';
   position: absolute;
@@ -155,7 +189,7 @@ html, body, #root {
   height: 2px;
   bottom: 0;
   left: 50%;
-  background: linear-gradient(to right, #000000, #000000);
+  background: linear-gradient(to right, #000, #000);
   transition: all 0.3s ease;
   transform: translateX(-50%);
 }
@@ -165,12 +199,13 @@ html, body, #root {
 }
 
 .nav-link:hover {
-  color: rgb(97, 97, 97) !important;
+  color: #616161 !important;
   transform: translateY(-1px);
   filter: brightness(1.2);
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
 }
 
+/* ========== Navbar Toggler ========== */
 .navbar-toggler {
   border: none;
   padding: 0.5rem;
@@ -181,15 +216,11 @@ html, body, #root {
   outline: none;
 }
 
-.navbar-toggler-icon {
-  transition: all 0.3s ease;
-}
-
-/* Animated mobile menu */
 .navbar-collapse {
   transition: all 0.3s ease-in-out;
 }
 
+/* Mobile Navbar */
 @media (max-width: 991px) {
   .navbar-collapse {
     position: absolute;
@@ -217,11 +248,10 @@ html, body, #root {
     opacity: 1;
     pointer-events: auto;
   }
-  
+
   .nav-link {
     padding: 0.8rem 1.2rem !important;
     border-radius: 8px;
-    transition: all 0.3s ease;
   }
 
   .nav-link:hover {
@@ -236,5 +266,3 @@ html, body, #root {
     padding: 0.5rem;
   }
 }
-
-

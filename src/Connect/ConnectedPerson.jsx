@@ -28,19 +28,38 @@ const ConnectedPerson = () => {
         : `chat_${userId}_${currentUserId}`
       : null;
 
-  // Scroll to bottom on new message
+  // ✅ Scroll to bottom when messages update
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Load saved chat from localStorage
+  // ✅ Load chat history (from MongoDB or localStorage fallback)
   useEffect(() => {
-    if (!chatKey) return;
-    const stored = localStorage.getItem(chatKey);
-    if (stored) setMessages(JSON.parse(stored));
-  }, [chatKey]);
+    if (!currentUserId || !userId) return;
 
-  // Fetch profile of the person you are chatting with
+    const fetchMessages = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/messages/${currentUserId}/${userId}`
+        );
+        if (res.data && res.data.length > 0) {
+          setMessages(res.data);
+          if (chatKey) localStorage.setItem(chatKey, JSON.stringify(res.data));
+        } else {
+          const stored = localStorage.getItem(chatKey);
+          if (stored) setMessages(JSON.parse(stored));
+        }
+      } catch (err) {
+        console.error("Error fetching messages:", err);
+        const stored = localStorage.getItem(chatKey);
+        if (stored) setMessages(JSON.parse(stored));
+      }
+    };
+
+    fetchMessages();
+  }, [currentUserId, userId, chatKey]);
+
+  // ✅ Fetch profile info
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -53,7 +72,7 @@ const ConnectedPerson = () => {
     fetchProfile();
   }, [userId]);
 
-  // Listen for incoming messages
+  // ✅ Listen for real-time messages via socket
   useEffect(() => {
     if (!currentUserId) return;
 
@@ -68,11 +87,14 @@ const ConnectedPerson = () => {
     return () => unsubscribeFromMessages();
   }, [currentUserId, userId, chatKey]);
 
-  // Handle sending messages
+  // ✅ Send message handler
   const handleSend = () => {
     if (!newMsg.trim()) return;
 
-    const updatedMessages = [...messages, { text: newMsg, senderId: currentUserId }];
+    const updatedMessages = [
+      ...messages,
+      { text: newMsg, senderId: currentUserId },
+    ];
     setMessages(updatedMessages);
     if (chatKey) localStorage.setItem(chatKey, JSON.stringify(updatedMessages));
 
@@ -85,11 +107,26 @@ const ConnectedPerson = () => {
     setNewMsg("");
   };
 
-  // Clear chat
-  const handleClearChat = () => {
-    if (window.confirm("Are you sure you want to clear this chat?")) {
+  // ✅ Clear chat handler (deletes from MongoDB too)
+  const handleClearChat = async () => {
+    if (!window.confirm("Are you sure you want to clear this chat?")) return;
+
+    try {
+      // 🧹 Delete from backend MongoDB
+      await axios.delete(
+        `http://localhost:5000/messages/${currentUserId}/${userId}`
+      );
+
+      // 🧹 Remove from localStorage
       if (chatKey) localStorage.removeItem(chatKey);
+
+      // 🧹 Clear from state
       setMessages([]);
+
+      alert("Chat cleared successfully!");
+    } catch (err) {
+      console.error("Error clearing chat:", err);
+      alert("Failed to clear chat. Try again later.");
     }
   };
 
@@ -129,7 +166,7 @@ const ConnectedPerson = () => {
           </div>
         </div>
 
-        {/* Clear Chat Button */}
+        {/* 🧹 Clear Chat Button */}
         <button
           className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
           onClick={handleClearChat}

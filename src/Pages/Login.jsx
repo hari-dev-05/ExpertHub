@@ -68,7 +68,24 @@ function Login() {
             className="input-field"
           />
 
-          <div className="forgot-password">Forgot Password?</div>
+   <div
+  className="forgot-password"
+  onClick={() => {
+    if (!email) {
+      alert("⚠️ Please enter your registered Gmail first.");
+      return;
+    }
+    if (!email.endsWith("@gmail.com")) {
+      alert("⚠️ Please enter a valid Gmail address.");
+      return;
+    }
+    navigate("/forget", { state: { email } }); // pass email to Forget page
+  }}
+>
+  Forgot Password?
+</div>
+
+
 
           <button onClick={handleLogin} className="login-btn">
             Login

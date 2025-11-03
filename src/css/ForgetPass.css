@@ -1,0 +1,119 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+
+.forgetpass-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9fafc;
+  font-family: "Poppins", sans-serif;
+}
+
+.form-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.form-box {
+  width: 100%;
+  max-width: 360px;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.form-box h2 {
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.subtext {
+  color: #6b6b6b;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.6rem;
+  outline: none;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+input:focus {
+  border-color: #7a5af8;
+  box-shadow: 0 0 0 3px rgba(122, 90, 248, 0.15);
+}
+
+button {
+  width: 100%;
+  background-color: #7a5af8;
+  border: none;
+  color: #fff;
+  padding: 0.75rem;
+  border-radius: 0.6rem;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #6a4de0;
+}
+
+.yellow-btn {
+  background-color: #f5b83d;
+}
+
+.yellow-btn:hover {
+  background-color: #e2a92c;
+}
+
+.image-section {
+  flex: 1;
+  background: #f4f5fb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-section img {
+  width: 200px;
+  filter: drop-shadow(0 15px 25px rgba(122, 90, 248, 0.3));
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.success-box {
+  text-align: center;
+  color: #1a1a1a;
+}
+
+.emoji {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.message {
+  margin-top: 1rem;
+  color: #6a4de0;
+  font-weight: 500;
+}
+.message a {
+  color: #7a5af8;
+  text-decoration: none;
+  font-weight: 600;
+}

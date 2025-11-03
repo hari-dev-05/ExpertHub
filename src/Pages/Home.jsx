@@ -1,8 +1,11 @@
 import React from "react";
 import { motion } from "motion/react";
+
 import "../css/Home.css";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+    const navigate = useNavigate();
   return (
     <div className="home-container">
       <motion.div
@@ -31,13 +34,15 @@ const Home = () => {
           Build skills, share ideas, and connect meaningfully.
         </motion.p>
 
-        <motion.button
-          className="get-started-btn"
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Get Started
-        </motion.button>
+       <motion.button
+  className="get-started-btn"
+  onClick={() => navigate("/community")}
+  whileHover={{ scale: 1.08 }}
+  whileTap={{ scale: 0.95 }}
+>
+  Get Started
+</motion.button>
+
       </motion.div>
 
       <div className="feature-row">

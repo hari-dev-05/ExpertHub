@@ -100,18 +100,29 @@ function Login() {
           <div className="divider">
             <span>or continue with</span>
           </div>
+<div className="text-center mt-3">
+  <button
+    type="button"
+    className="btn btn-light border rounded-circle d-flex align-items-center justify-content-center mx-auto shadow-sm"
+    style={{
+      width: "50px",
+      height: "50px",
+      backgroundColor: "#fff",
+    }}
+  >
+    <img
+      src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+      alt="Google logo"
+      style={{ width: "24px", height: "24px" }}
+    />
+  </button>
+</div>
 
-          <div className="social-buttons">
-            <button className="social-icon google">
-              <i className="fa-brands fa-google"></i>
-            </button>
-            <button className="social-icon apple">
-              <i className="fa-brands fa-apple"></i>
-            </button>
-            <button className="social-icon facebook">
-              <i className="fa-brands fa-facebook-f"></i>
-            </button>
-          </div>
+
+
+
+
+
 
           <p className="register-text">
             Not a member?{" "}

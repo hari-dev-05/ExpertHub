@@ -147,13 +147,28 @@ useEffect(() => {
                   {user.email || "Email"}
                 </p>
               </div>
+<div className="d-flex gap-2 mt-3">
+  <button
+    className="btn btn-sm btn-primary"
+    style={{ borderRadius: "12px" }}
+    onClick={() => navigate(`/connected/${user.userId}`)}
+  >
+    Chat
+  </button>
+
 <button
-  className="btn btn-sm btn-primary mt-2"
+  className="btn btn-sm btn-outline-primary"
   style={{ borderRadius: "12px" }}
-  onClick={() => navigate(`/connected/${user.userId}`)}
+  onClick={() =>
+    navigate(`/checkprofile/${user.userId}`, { state: { user } })
+  }
 >
   Connect
 </button>
+
+</div>
+
+
 
 
             </div>

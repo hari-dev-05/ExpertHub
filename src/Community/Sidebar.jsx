@@ -1,59 +1,36 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { Home, User, Users, MessageCircle, Settings } from "lucide-react";
+import "../css/Community.css";
 
 const Sidebar = () => {
+  const menuItems = [
+    { name: "Home", icon: <Home size={18} />, path: "/community/home" },
+    { name: "Profile", icon: <User size={18} />, path: "/community/profile" },
+    { name: "People", icon: <Users size={18} />, path: "/community/people" },
+    { name: "Messages", icon: <MessageCircle size={18} />, path: "/community/messages" },
+    { name: "Settings", icon: <Settings size={18} />, path: "/community/settings" },
+  ];
+
   return (
-    <div className="d-flex flex-column p-3 bg-light vh-100 border-end">
-      <h4 className="text-center mb-4 fw-bold">Community</h4>
+    <div className="sidebar d-flex flex-column p-3 h-100">
+      <h4 className="fw-bold mb-4 text-center text-white">Community</h4>
 
-      <ul className="nav nav-pills flex-column mb-auto">
-        <li className="nav-item mb-2">
-          <NavLink 
-            to="home" 
-            className={({ isActive }) => "nav-link text-dark" + (isActive ? " active fw-bold" : "")}
-          >
-            🏠 Home
-          </NavLink>
-        </li>
-        <li className="nav-item mb-2">
-          <NavLink 
-            to="profile" 
-            className={({ isActive }) => "nav-link text-dark" + (isActive ? " active fw-bold" : "")}
-          >
-            👤 Profile
-          </NavLink>
-        </li>
-        <li className="nav-item mb-2">
-          <NavLink 
-            to="people" 
-            className={({ isActive }) => "nav-link text-dark" + (isActive ? " active fw-bold" : "")}
-          >
-            👥 People
-          </NavLink>
-        </li>
-        <li className="nav-item mb-2">
-          <NavLink 
-            to="chat" 
-            className={({ isActive }) => "nav-link text-dark" + (isActive ? " active fw-bold" : "")}
-          >
-            💬 Messages
-          </NavLink>
-        </li>
-        <li className="nav-item mb-2">
-          <NavLink 
-            to="settings" 
-            className={({ isActive }) => "nav-link text-dark" + (isActive ? " active fw-bold" : "")}
-          >
-            ⚙️ Settings
-          </NavLink>
-        </li>
-      </ul>
-
-      <div className="mt-auto text-center border-top pt-3">
-        <small className="text-muted">© 2025 ADEPTICODE</small>
-      </div>
+      {menuItems.map((item) => (
+        <NavLink
+          key={item.name}
+          to={item.path}
+          className={({ isActive }) =>
+            `sidebar-link d-flex align-items-center gap-2 px-3 py-2 mb-2 rounded-3 ${
+              isActive ? "active" : ""
+            }`
+          }
+        >
+          {item.icon}
+          {item.name}
+        </NavLink>
+      ))}
     </div>
   );
 };
-
 export default Sidebar;

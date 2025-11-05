@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { MapPin, Briefcase, Phone, Mail, Pencil } from "lucide-react";
 import { useAuth } from "../Pages/AuthContext";
-
-
-
+import "../css/ComProfile.css";
 
 const ComProfile = ({ userId }) => {
   const [profile, setProfile] = useState(null);
-  const {setProfileEmail} = useAuth();
-    
+  const { setProfileEmail } = useAuth();
+
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -28,7 +26,6 @@ const ComProfile = ({ userId }) => {
       try {
         const res = await axios.get(`http://localhost:5000/profile/${userId}`);
         const data = res.data;
-
         setProfile(data);
         setForm({
           name: data.name || "",
@@ -37,7 +34,7 @@ const ComProfile = ({ userId }) => {
           city: data.city || "",
           skills: data.skills || "",
         });
-         setProfileEmail(data.email)
+        setProfileEmail(data.email);
       } catch (err) {
         console.error("Error fetching profile:", err);
         setError("Failed to fetch profile");
@@ -90,12 +87,12 @@ const ComProfile = ({ userId }) => {
   };
 
   return (
-    <div className="container py-5">
+    <div className="profile-container">
       {/* Profile Header */}
-      <div className="bg-light p-4 rounded shadow-sm mb-5">
-        <div className="d-flex flex-column flex-md-row align-items-center align-items-md-start">
+      <div className="profile-card">
+        <div className="profile-header">
           {/* Profile Picture */}
-          <div className="position-relative mb-3 mb-md-0 me-md-4">
+          <div className="profile-pic-wrapper">
             <img
               src={
                 profile.image
@@ -103,91 +100,46 @@ const ComProfile = ({ userId }) => {
                   : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
               }
               alt="Profile"
-              className="rounded-circle border border-2"
-              width="120"
-              height="120"
-              style={{ objectFit: "cover" }}
+              className="profile-pic"
             />
 
-            {/* Edit Icon */}
-            <label
-              htmlFor="imageUpload"
-              className="position-absolute bottom-0 end-0 bg-white border border-secondary rounded-circle p-1 shadow-sm"
-              style={{
-                cursor: "pointer",
-                width: "28px",
-                height: "28px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Pencil size={14} className="text-secondary" />
+            <label htmlFor="imageUpload" className="edit-icon">
+              <Pencil size={14} />
             </label>
             <input
               type="file"
               id="imageUpload"
               accept="image/*"
-              style={{ display: "none" }}
               onChange={handleImageChange}
+              style={{ display: "none" }}
             />
           </div>
 
-          {/* Name and Info */}
-          <div className="flex-grow-1 text-center text-md-start">
-            <h3 className="mb-3">{profile.name || "Your Name"}</h3>
+          {/* Name & Info */}
+          <div className="profile-info">
+            <h3>{profile.name || "Your Name"}</h3>
 
-            <div className="d-flex flex-column flex-sm-row justify-content-center justify-content-md-start align-items-center align-items-md-start gap-3">
-              <div className="text-start">
-                <p className="mb-2 d-flex align-items-center">
-                  <span
-                    className="border rounded-circle d-inline-flex align-items-center justify-content-center me-2"
-                    style={{ width: "28px", height: "28px" }}
-                  >
-                    <MapPin size={16} />
-                  </span>
-                  <span>{profile.city || "City"}</span>
+            <div className="profile-details">
+              <div className="profile-group">
+                <p>
+                  <MapPin size={16} /> {profile.city || "City"}
                 </p>
-
-                <p className="mb-0 d-flex align-items-center">
-                  <span
-                    className="border rounded-circle d-inline-flex align-items-center justify-content-center me-2"
-                    style={{ width: "28px", height: "28px" }}
-                  >
-                    <Briefcase size={16} />
-                  </span>
-                  <span>
-                    {Array.isArray(profile.skills)
-                      ? profile.skills.join(", ")
-                      : profile.skills || "Skills"}
-                  </span>
+                <p>
+                  <Briefcase size={16} />{" "}
+                  {Array.isArray(profile.skills)
+                    ? profile.skills.join(", ")
+                    : profile.skills || "Skills"}
                 </p>
               </div>
 
-              <div
-                className="d-none d-md-block mx-3"
-                style={{ width: "2px", backgroundColor: "#dcdcdc", height: "50px" }}
-              ></div>
+              <div className="divider"></div>
 
-              <div className="text-start">
-                <p className="mb-2 d-flex align-items-center">
-                  <span
-                    className="border rounded-circle d-inline-flex align-items-center justify-content-center me-2"
-                    style={{ width: "28px", height: "28px" }}
-                  >
-                    <Phone size={16} />
-                  </span>
-                  <span>{profile.phone || "Phone"}</span>
+              <div className="profile-group">
+                <p>
+                  <Phone size={16} /> {profile.phone || "Phone"}
                 </p>
-
-                <p className="mb-0 d-flex align-items-center">
-                  <span
-                    className="border rounded-circle d-inline-flex align-items-center justify-content-center me-2"
-                    style={{ width: "28px", height: "28px" }}
-                  >
-                    <Mail size={16} />
-                  </span>
-                  <span>{profile.email || "Email"}</span>
+                <p>
+                  <Mail size={16} /> {profile.email || "Email"}
                 </p>
               </div>
             </div>
@@ -195,31 +147,22 @@ const ComProfile = ({ userId }) => {
         </div>
       </div>
 
-      {/* Input Form */}
-      <div className="row g-4 text-start">
+      {/* Editable Form */}
+      <div className="form-section">
         {["name", "phone", "email", "city", "skills"].map((field) => (
-          <div
-            key={field}
-            className={`col-12 col-md-${field === "city" || field === "skills" ? 6 : 4}`}
-          >
-            <label className="fw-semibold">
-              {field.charAt(0).toUpperCase() + field.slice(1)}
-            </label>
+          <div className="form-group" key={field}>
+            <label>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
             <input
               type={field === "email" ? "email" : "text"}
               name={field}
               value={form[field]}
               onChange={handleChange}
-              className="form-control border-0 border-bottom"
               placeholder={`Enter ${field}`}
             />
           </div>
         ))}
-      </div>
 
-      {/* Update Button */}
-      <div className="text-center mt-4">
-        <button className="btn btn-primary px-5" onClick={handleUpdate}>
+        <button className="update-btn" onClick={handleUpdate}>
           Update Profile
         </button>
       </div>

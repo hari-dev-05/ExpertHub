@@ -1,0 +1,186 @@
+/* === SkillBridge Profile Theme === */
+
+.profile-container {
+  background-color: #0d0d0d;
+  color: #eaeaea;
+  min-height: 100vh;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* === Card Section === */
+.profile-card {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(18, 18, 18, 0.9);
+  border: 1px solid rgba(245, 197, 24, 0.15);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 25px rgba(245, 197, 24, 0.05);
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+
+.profile-card:hover {
+  box-shadow: 0 6px 30px rgba(245, 197, 24, 0.1);
+}
+
+/* === Header Layout === */
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+@media (min-width: 768px) {
+  .profile-header {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+/* === Profile Picture === */
+.profile-pic-wrapper {
+  position: relative;
+}
+
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid #f5c518;
+  object-fit: cover;
+  box-shadow: 0 0 20px rgba(245, 197, 24, 0.2);
+}
+
+.edit-icon {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: #f5c518;
+  color: #0d0d0d;
+  border-radius: 50%;
+  padding: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-icon:hover {
+  background: #ffd700;
+  transform: scale(1.1);
+}
+
+/* === Info Section === */
+.profile-info {
+  text-align: center;
+}
+
+.profile-info h3 {
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .profile-details {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.profile-group p {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ccc;
+  font-size: 0.95rem;
+}
+
+.profile-group svg {
+  color: #f5c518;
+}
+
+.divider {
+  height: 2px;
+  width: 100%;
+  background: rgba(245, 197, 24, 0.15);
+}
+
+@media (min-width: 768px) {
+  .divider {
+    width: 2px;
+    height: 60px;
+  }
+}
+
+/* === Form Section === */
+.form-section {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(18, 18, 18, 0.85);
+  border: 1px solid rgba(245, 197, 24, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(245, 197, 24, 0.05);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: space-between;
+}
+
+.form-group {
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #f5c518;
+}
+
+.form-group input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(245, 197, 24, 0.3);
+  color: #fff;
+  padding: 0.6rem 0.2rem;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #f5c518;
+}
+
+/* === Button === */
+.update-btn {
+  background: #f5c518;
+  color: #0d0d0d;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.8rem 2rem;
+  margin-top: 1rem;
+  align-self: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.update-btn:hover {
+  background: #ffd700;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(245, 197, 24, 0.3);
+}

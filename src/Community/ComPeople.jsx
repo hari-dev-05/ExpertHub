@@ -75,34 +75,50 @@ const ComPeople = () => {
               {user.skills || "Skills"}
             </p>
 
-            <div className="divider" />
+              <hr
+                style={{
+                  width: "80%",
+                  border: "none",
+                  borderTop: "1px solid #e2e8f0",
+                  margin: "0.8rem 0",
+                }}
+              />
 
-            <div className="profile-contact">
-              <p>
-                <Phone size={14} className="icon green" />{" "}
-                {user.phone || "Phone"}
-              </p>
-              <p>
-                <Mail size={14} className="icon red" />{" "}
-                {user.email || "Email"}
-              </p>
-            </div>
+              {/* Contact */}
+              <div style={{ fontSize: "0.85rem" }}>
+                <p className="mb-1 d-flex justify-content-center align-items-center text-secondary">
+                  <Phone size={14} className="me-1 text-success" />{" "}
+                  {user.phone || "Phone"}
+                </p>
+                <p className="mb-0 d-flex justify-content-center align-items-center text-secondary">
+                  <Mail size={14} className="me-1 text-danger" />{" "}
+                  {user.email || "Email"}
+                </p>
+              </div>
+<div className="d-flex gap-2 mt-3">
+  <button
+    className="btn btn-sm btn-primary"
+    style={{ borderRadius: "12px" }}
+    onClick={() => navigate(`/connected/${user.userId}`)}
+  >
+    Chat
+  </button>
 
-            <div className="button-group">
-              <button
-                className="chat-btn"
-                onClick={() => navigate(`/connected/${user.userId}`)}
-              >
-                Chat
-              </button>
-              <button
-                className="connect-btn"
-                onClick={() =>
-                  navigate(`/checkprofile/${user.userId}`, { state: { user } })
-                }
-              >
-                Connect
-              </button>
+<button
+  className="btn btn-sm btn-outline-primary"
+  style={{ borderRadius: "12px" }}
+  onClick={() =>
+    navigate(`/checkprofile/${user.userId}`, { state: { user } })
+  }
+>
+  Connect
+</button>
+
+</div>
+
+
+
+
             </div>
           </motion.div>
         ))}

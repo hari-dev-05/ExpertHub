@@ -6,6 +6,7 @@ import ForgetPass from "../Pages/ForgetPass.jsx";
 import Nav from "../Components/Nav.jsx";
 import Home from "../Pages/Home";
 import Account from "../Pages/Account";
+import Meeting from "../Connect/Meeting.jsx";
 import Login from "../Pages/Login.jsx";
 import Signup from "../Pages/Signup.jsx";
 
@@ -14,7 +15,7 @@ import ComHome from "../Community/ComHome.jsx";
 import ComProfile from "../Community/ComProfile.jsx";
 import ComPeople from "../Community/ComPeople.jsx";
 import ConnectedPerson from "../Connect/ConnectedPerson.jsx";
-import CheckingProfile from "../Connect/CheckingProfile.jsx";
+
 
 const AppRoute = () => {
   const location = useLocation();
@@ -34,7 +35,8 @@ const AppRoute = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/connected/:userId" element={<ConnectedPerson />} />
-        <Route path="/checkprofile/:userId" element={<CheckingProfile />} />
+   <Route path="/meeting/:userId" element={<Meeting />} />
+
         <Route path="/forget" element={<ForgetPass />} />
 
 

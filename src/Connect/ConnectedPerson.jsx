@@ -1,26 +1,35 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { ArrowLeft, Send, Trash2 } from "lucide-react";
+import {
+  MapPin,
+  Briefcase,
+  Phone,
+  Mail,
+  ArrowLeft,
+  Send,
+  Trash2,
+} from "lucide-react";
 import {
   sendMessage,
   subscribeToMessages,
   unsubscribeFromMessages,
 } from "../Community/socket";
 import { useAuth } from "../Pages/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const ConnectedPerson = () => {
   const { userId } = useParams();
   const { user } = useAuth();
   const currentUserId = user?._id;
-
   const [profile, setProfile] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState("");
+  const [showChat, setShowChat] = useState(false); // ✅ toggle chat visibility
 
   const chatEndRef = useRef(null);
+  const navigate = useNavigate();
 
-  // ✅ Shared symmetric key for both users
   const chatKey =
     currentUserId && userId
       ? currentUserId < userId
@@ -28,12 +37,10 @@ const ConnectedPerson = () => {
         : `chat_${userId}_${currentUserId}`
       : null;
 
-  // ✅ Scroll to bottom when messages update
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ✅ Load chat history (from MongoDB or localStorage fallback)
   useEffect(() => {
     if (!currentUserId || !userId) return;
 
@@ -59,20 +66,23 @@ const ConnectedPerson = () => {
     fetchMessages();
   }, [currentUserId, userId, chatKey]);
 
-  // ✅ Fetch profile info
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await axios.get(`http://localhost:5000/profile/${userId}`);
-        setProfile(res.data);
-      } catch (err) {
-        console.error("Error fetching profile:", err);
-      }
-    };
-    fetchProfile();
-  }, [userId]);
+useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/profile/${userId}`);
+      setProfile(res.data);
 
-  // ✅ Listen for real-time messages via socket
+      // ✅ Log both emails once profile is loaded
+      console.log("Logged-in user email:", user?.email);
+      console.log("Profile email:", res.data?.email);
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    }
+  };
+  fetchProfile();
+}, [userId, user?.email]);
+
+
   useEffect(() => {
     if (!currentUserId) return;
 
@@ -87,7 +97,6 @@ const ConnectedPerson = () => {
     return () => unsubscribeFromMessages();
   }, [currentUserId, userId, chatKey]);
 
-  // ✅ Send message handler
   const handleSend = () => {
     if (!newMsg.trim()) return;
 
@@ -107,22 +116,15 @@ const ConnectedPerson = () => {
     setNewMsg("");
   };
 
-  // ✅ Clear chat handler (deletes from MongoDB too)
   const handleClearChat = async () => {
     if (!window.confirm("Are you sure you want to clear this chat?")) return;
 
     try {
-      // 🧹 Delete from backend MongoDB
       await axios.delete(
         `http://localhost:5000/messages/${currentUserId}/${userId}`
       );
-
-      // 🧹 Remove from localStorage
       if (chatKey) localStorage.removeItem(chatKey);
-
-      // 🧹 Clear from state
       setMessages([]);
-
       alert("Chat cleared successfully!");
     } catch (err) {
       console.error("Error clearing chat:", err);
@@ -130,103 +132,229 @@ const ConnectedPerson = () => {
     }
   };
 
-  if (!profile) return <p>Loading chat...</p>;
+  if (!profile) return <p>Loading...</p>;
 
   return (
-    <div
-      className="container d-flex flex-column border rounded  shadow-sm p-0"
-      style={{ maxWidth: "600px", height: "80vh",marginTop:"100px", backgroundColor: "#f9fafb" }}
-    >
-      {/* Header */}
-      <div
-        className="d-flex align-items-center justify-content-between p-3 border-bottom bg-white"
-        style={{ borderRadius: "10px 10px 0 0" }}
-      >
-        <div className="d-flex align-items-center gap-2">
-          <ArrowLeft
-            size={20}
-            className="text-muted"
-            style={{ cursor: "pointer" }}
-            onClick={() => window.history.back()}
-          />
-          <img
-            src={
-              profile.image
-                ? `http://localhost:5000/${profile.image}`
-                : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-            }
-            alt={profile.name}
-            className="rounded-circle border"
-            width="40"
-            height="40"
-          />
-          <div>
-            <h6 className="mb-0">{profile.name}</h6>
-            <small className="text-muted">{profile.city}</small>
+    <div className="container py-5">
+      {/* --- Profile Header Section --- */}
+      <div className="bg-white p-4 rounded shadow-sm mb-4 border">
+        <div className="d-flex flex-column flex-md-row align-items-center align-items-md-start">
+          {/* Profile Picture */}
+          <div className="position-relative mb-3 mb-md-0 me-md-4">
+            <img
+              src={
+                profile?.image
+                  ? `http://localhost:5000/${profile.image}`
+                  : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              }
+              alt={profile?.name}
+              className="rounded-circle border border-2"
+              width="120"
+              height="120"
+              style={{ objectFit: "cover" }}
+            />
+          </div>
+
+          {/* Name and Info */}
+          <div className="flex-grow-1 text-center text-md-start">
+            <h3 className="mb-3 fw-bold" style={{ color: "#1f2937" }}>
+              {profile?.name || "Unnamed User"}
+            </h3>
+
+            <div className="d-flex flex-column flex-sm-row justify-content-center justify-content-md-start align-items-center align-items-md-start gap-3">
+              <div className="text-start">
+                <p
+                  className="mb-2 d-flex align-items-center"
+                  style={{ color: "#374151" }}
+                >
+                  <span
+                    className="border rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                    style={{ width: "28px", height: "28px", color: "#2563eb" }}
+                  >
+                    <MapPin size={16} />
+                  </span>
+                  <span>{profile?.city || "City"}</span>
+                </p>
+
+                <p
+                  className="mb-0 d-flex align-items-center"
+                  style={{ color: "#374151" }}
+                >
+                  <span
+                    className="border rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                    style={{ width: "28px", height: "28px", color: "#0ea5e9" }}
+                  >
+                    <Briefcase size={16} />
+                  </span>
+                  <span>
+                    {Array.isArray(profile?.skills)
+                      ? profile.skills.join(", ")
+                      : profile?.skills || "Skills"}
+                  </span>
+                </p>
+              </div>
+
+              <div
+                className="d-none d-md-block mx-3"
+                style={{
+                  width: "2px",
+                  backgroundColor: "#e5e7eb",
+                  height: "50px",
+                }}
+              ></div>
+
+              <div className="text-start">
+                <p
+                  className="mb-2 d-flex align-items-center"
+                  style={{ color: "#374151" }}
+                >
+                  <span
+                    className="border rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                    style={{ width: "28px", height: "28px", color: "#22c55e" }}
+                  >
+                    <Phone size={16} />
+                  </span>
+                  <span>{profile?.phone || "Phone"}</span>
+                </p>
+
+                <p
+                  className="mb-0 d-flex align-items-center"
+                  style={{ color: "#374151" }}
+                >
+                  <span
+                    className="border rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                    style={{ width: "28px", height: "28px", color: "#ef4444" }}
+                  >
+                    <Mail size={16} />
+                  </span>
+                  <span>{profile?.email || "Email"}</span>
+                </p>
+              </div>
+
+              {/* ✅ Chat Button */}
+              <div>
+                <button
+                  className="btn btn-primary "
+                  onClick={() => setShowChat((prev) => !prev)}
+                >
+                  {showChat ? "Close Chat" : "Chat"}
+                </button>
+              </div>
+              <div>
+              <button
+  className="btn btn-outline-primary"
+onClick={() => navigate(`/meeting/${userId}`)}
+
+>
+  Schedule Meeting
+</button>
+
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* 🧹 Clear Chat Button */}
-        <button
-          className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
-          onClick={handleClearChat}
-        >
-          <Trash2 size={14} />
-          Clear
-        </button>
       </div>
 
-      {/* Chat Area */}
-      <div
-        className="flex-grow-1 p-3 overflow-auto"
-        style={{ backgroundColor: "#f1f5f9" }}
-      >
-        {messages.length === 0 ? (
-          <div className="text-center text-muted mt-5">
-            <small>Start your conversation with {profile.name}</small>
-          </div>
-        ) : (
-          messages.map((msg, i) => {
-            const isMe = msg.senderId === currentUserId;
-            return (
-              <div
-                key={i}
-                className={`d-flex mb-2 ${
-                  isMe ? "justify-content-end" : "justify-content-start"
-                }`}
-              >
-                <div
-                  className={`p-2 rounded-3 ${
-                    isMe ? "bg-primary text-white" : "bg-white border text-dark"
-                  }`}
-                  style={{ maxWidth: "70%" }}
-                >
-                  {msg.text}
-                </div>
+      {/* --- Chat Section (Visible when Chat button clicked) --- */}
+      {showChat && (
+        <div
+          className="container d-flex flex-column border rounded shadow-sm p-0"
+          style={{
+            maxWidth: "600px",
+            height: "80vh",
+            backgroundColor: "#f9fafb",
+          }}
+        >
+          {/* Header */}
+          <div className="d-flex align-items-center justify-content-between p-3 border-bottom bg-white">
+            <div className="d-flex align-items-center gap-2">
+              <ArrowLeft
+                size={20}
+                className="text-muted"
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowChat(false)}
+              />
+              <img
+                src={
+                  profile.image
+                    ? `http://localhost:5000/${profile.image}`
+                    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                }
+                alt={profile.name}
+                className="rounded-circle border"
+                width="40"
+                height="40"
+              />
+              <div>
+                <h6 className="mb-0">{profile.name}</h6>
+                <small className="text-muted">{profile.city}</small>
               </div>
-            );
-          })
-        )}
-        <div ref={chatEndRef}></div>
-      </div>
+            </div>
 
-      {/* Input Area */}
-      <div className="d-flex align-items-center p-2 border-top bg-white">
-        <input
-          type="text"
-          className="form-control border-0"
-          placeholder="Type a message..."
-          value={newMsg}
-          onChange={(e) => setNewMsg(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-        />
-        <button
-          className="btn btn-primary rounded-circle ms-2"
-          onClick={handleSend}
-        >
-          <Send size={18} />
-        </button>
-      </div>
+            <button
+              className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
+              onClick={handleClearChat}
+            >
+              <Trash2 size={14} />
+              Clear
+            </button>
+          </div>
+
+          {/* Chat Area */}
+          <div
+            className="flex-grow-1 p-3 overflow-auto"
+            style={{ backgroundColor: "#f1f5f9" }}
+          >
+            {messages.length === 0 ? (
+              <div className="text-center text-muted mt-5">
+                <small>Start your conversation with {profile.name}</small>
+              </div>
+            ) : (
+              messages.map((msg, i) => {
+                const isMe = msg.senderId === currentUserId;
+                return (
+                  <div
+                    key={i}
+                    className={`d-flex mb-2 ${
+                      isMe ? "justify-content-end" : "justify-content-start"
+                    }`}
+                  >
+                    <div
+                      className={`p-2 rounded-3 ${
+                        isMe
+                          ? "bg-primary text-white"
+                          : "bg-white border text-dark"
+                      }`}
+                      style={{ maxWidth: "70%" }}
+                    >
+                      {msg.text}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+            <div ref={chatEndRef}></div>
+          </div>
+
+          {/* Input Area */}
+          <div className="d-flex align-items-center p-2 border-top bg-white">
+            <input
+              type="text"
+              className="form-control border-0"
+              placeholder="Type a message..."
+              value={newMsg}
+              onChange={(e) => setNewMsg(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            />
+            <button
+              className="btn btn-primary rounded-circle ms-2"
+              onClick={handleSend}
+            >
+              <Send size={18} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

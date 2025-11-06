@@ -1,11 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../Pages/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { NavLink } from "react-router-dom";
-import "../css/Nav.css";
-
 
 const Nav = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -22,74 +18,46 @@ const Nav = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [scrolled]);
   const [open, setOpen] = useState(false);
-  const { user } = useAuth();
+  const { user } = useAuth();  // <-- use user instead of accEmail
 
   return (
-    <nav className="motion-nav">
-      <div className="nav-left">
-        <NavLink to="/" className="logo" onClick={() => setOpen(false)}>
-          <div className="logo-icon">Sb</div>
-        </NavLink>
-      </div>
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div className="container-fluid">
+        <Link className="navbar-brand fw-bold" to="/">Expert Hub</Link>
 
-      <div className={`nav-links ${open ? "open" : ""}`}>
-        <NavLink
-          to="/"
-          className={({ isActive }) =>
-            `nav-link ${isActive ? "active-link" : ""}`
-          }
-          onClick={() => setOpen(false)}
-          end
-        >
-          Home
-        </NavLink>
-
-        <NavLink
-          to="/community"
-          className={({ isActive }) =>
-            `nav-link ${isActive ? "active-link" : ""}`
-          }
-          onClick={() => setOpen(false)}
-        >
-          Community
-        </NavLink>
-
-        <NavLink
-          to="/tutorials"
-          className={({ isActive }) =>
-            `nav-link ${isActive ? "active-link" : ""}`
-          }
-          onClick={() => setOpen(false)}
-        >
-          About
-        </NavLink>
-
-        {user && (
-          <NavLink
-            to="/account"
-            className={({ isActive }) =>
-              `nav-link ${isActive ? "active-link" : ""}`
-            }
-            onClick={() => setOpen(false)}
-          >
-            Account
-          </NavLink>
-        )}
-      </div>
-
-      <div className="nav-right">
-        {!user && (
-          <NavLink to="/login" className="nav-button" onClick={() => setOpen(false)}>
-            Login
-          </NavLink>
-        )}
         <button
-          className="menu-toggle"
-          onClick={() => setOpen(!open)}
+          className="navbar-toggler"
+          type="button"
+          aria-controls="navbarNav"
+          aria-expanded={open}
           aria-label="Toggle navigation"
+          onClick={() => setOpen(!open)}
         >
-          ☰
+          <span className="navbar-toggler-icon"></span>
         </button>
+
+        <div className={`collapse navbar-collapse${open ? " show" : ""}`} id="navbarNav">
+          <ul className="navbar-nav ms-auto">
+            <li className="nav-item me-3">
+              <Link className="nav-link" to="/" onClick={() => setOpen(false)}>Home</Link>
+            </li>
+            <li className="nav-item me-3">
+              <Link className="nav-link" to="/community" onClick={() => setOpen(false)}>Community</Link>
+            </li>
+
+            {!user && (
+              <li className="nav-item me-3">
+                <Link className="nav-link" to="/login" onClick={() => setOpen(false)}>Login</Link>
+              </li>
+            )}
+
+            {user && (
+              <li className="nav-item">
+                <Link className="nav-link" to="/account" onClick={() => setOpen(false)}>Account</Link>
+              </li>
+            )}
+          </ul>
+        </div>
       </div>
     </nav>
   );

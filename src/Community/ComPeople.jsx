@@ -153,18 +153,10 @@ useEffect(() => {
     style={{ borderRadius: "12px" }}
     onClick={() => navigate(`/connected/${user.userId}`)}
   >
-    Chat
+    Connect
   </button>
 
-<button
-  className="btn btn-sm btn-outline-primary"
-  style={{ borderRadius: "12px" }}
-  onClick={() =>
-    navigate(`/checkprofile/${user.userId}`, { state: { user } })
-  }
->
-  Connect
-</button>
+
 
 </div>
 

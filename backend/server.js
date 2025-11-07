@@ -21,12 +21,18 @@ const server = http.createServer(app);
 // Setup Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // frontend URL
+    origin: ["http://localhost:5173", "http://localhost:5174"], // frontend URLs
     methods: ["GET", "POST"]
   }
 });
 
-app.use(cors());
+// Configure CORS with specific options
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:5174"],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
+}));
+
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 

@@ -34,7 +34,7 @@ const CommunityLayout = () => {
             <div className="col-12 col-md-3 col-lg-2 bg-light border-end p-0">
               <Sidebar />
             </div>
-            <div className="col-12 col-md-9 col-lg-10 p-3">
+            <div className="col-12 col-md-9 col-lg-10 p-3 mt-5">
               <Outlet />
             </div>
           </div>

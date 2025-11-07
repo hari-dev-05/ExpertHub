@@ -9,12 +9,14 @@ import Account from "../Pages/Account";
 import Meeting from "../Connect/Meeting.jsx";
 import Login from "../Pages/Login.jsx";
 import Signup from "../Pages/Signup.jsx";
+import Group from "../Community/Group.jsx"; // rename import
 
 import CommunityLayout from "../Community/CommunityLayout"; // layout with <Outlet />
 import ComHome from "../Community/ComHome.jsx";
 import ComProfile from "../Community/ComProfile.jsx";
 import ComPeople from "../Community/ComPeople.jsx";
 import ConnectedPerson from "../Connect/ConnectedPerson.jsx";
+
 
 
 const AppRoute = () => {
@@ -52,6 +54,7 @@ const AppRoute = () => {
             }
           /> {/* /community/profile */}
           <Route path="people" element={<ComPeople />} />   {/* /community/people */}
+          <Route path="group" element={<Group />} />
         </Route>
       </Routes>
     </>

@@ -4,8 +4,8 @@ import axios from "axios";
 import { useAuth } from "../Pages/AuthContext";
 
 const Meeting = () => {
-  const { userId } = useParams(); // person you're scheduling with
-  const { user } = useAuth(); // logged-in user
+  const { userId } = useParams(); // receiver (the person you're scheduling with)
+  const { user } = useAuth(); // logged-in user (sender)
   const [profile, setProfile] = useState(null);
 
   const [form, setForm] = useState({
@@ -15,6 +15,7 @@ const Meeting = () => {
     duration: "",
   });
 
+  // Fetch receiver profile
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -27,6 +28,7 @@ const Meeting = () => {
     fetchProfile();
   }, [userId]);
 
+  // Handle meeting scheduling
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -39,29 +41,44 @@ const Meeting = () => {
     const from = user.email;
     const to = profile.email;
 
-    // Clean email body using template literals and encodeURIComponent
+    // 🔗 Generate unique Jitsi meeting link with user's display name
+    const meetingRoom = `meeting-${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(7)}`;
+    const meetingLink = `https://meet.jit.si/${meetingRoom}#userInfo.displayName="${encodeURIComponent(
+      user.name || user.email
+    )}"`;
+
+    // 📨 Email body (includes meeting details + link)
     const bodyText = `
 Hi ${profile.name || "there"},
 
-I’d like to schedule a meeting with you.
+I'd like to schedule a meeting with you.
 
-Details:
-Date: ${date}
-Time: ${time}
-Duration: ${duration} minutes
+📅 Date: ${date}
+⏰ Time: ${time}
+⏱ Duration: ${duration} minutes
+
+🔗 Join the meeting here: ${meetingLink}
 
 Thanks,
 ${from}
     `;
+
     const body = encodeURIComponent(bodyText);
 
-    // Gmail compose link
-const gmailLink = `https://mail.google.com/mail/?view=cm&to=${to}&cc=${from}&su=${encodeURIComponent(
-  subject
-)}&body=${body}`;
+    // 📧 Gmail compose link
+    const gmailLink = `https://mail.google.com/mail/?view=cm&to=${to}&cc=${from}&su=${encodeURIComponent(
+      subject
+    )}&body=${body}`;
 
-
+    // Open Gmail compose window
     window.open(gmailLink, "_blank", "noopener,noreferrer");
+
+    // Optional: ask if sender wants to join immediately
+    if (window.confirm("Meeting link generated! Do you want to join now?")) {
+      window.open(meetingLink, "_blank");
+    }
   };
 
   return (
@@ -74,7 +91,7 @@ const gmailLink = `https://mail.google.com/mail/?view=cm&to=${to}&cc=${from}&su=
         onSubmit={handleSubmit}
         className="border p-4 rounded shadow-sm bg-white"
       >
-        {/* Locked Emails */}
+        {/* Sender Email */}
         <div className="mb-3">
           <label className="form-label">Sender Email</label>
           <input
@@ -85,6 +102,7 @@ const gmailLink = `https://mail.google.com/mail/?view=cm&to=${to}&cc=${from}&su=
           />
         </div>
 
+        {/* Receiver Email */}
         <div className="mb-3">
           <label className="form-label">Receiver Email</label>
           <input
@@ -95,7 +113,7 @@ const gmailLink = `https://mail.google.com/mail/?view=cm&to=${to}&cc=${from}&su=
           />
         </div>
 
-        {/* Editable Fields */}
+        {/* Meeting Subject */}
         <div className="mb-3">
           <label className="form-label">Subject</label>
           <input
@@ -108,6 +126,7 @@ const gmailLink = `https://mail.google.com/mail/?view=cm&to=${to}&cc=${from}&su=
           />
         </div>
 
+        {/* Date */}
         <div className="mb-3">
           <label className="form-label">Date</label>
           <input
@@ -120,6 +139,7 @@ const gmailLink = `https://mail.google.com/mail/?view=cm&to=${to}&cc=${from}&su=
           />
         </div>
 
+        {/* Time */}
         <div className="mb-3">
           <label className="form-label">Time</label>
           <input
@@ -132,6 +152,7 @@ const gmailLink = `https://mail.google.com/mail/?view=cm&to=${to}&cc=${from}&su=
           />
         </div>
 
+        {/* Duration */}
         <div className="mb-3">
           <label className="form-label">Duration (minutes)</label>
           <input
@@ -144,8 +165,9 @@ const gmailLink = `https://mail.google.com/mail/?view=cm&to=${to}&cc=${from}&su=
           />
         </div>
 
+        {/* Submit */}
         <button type="submit" className="btn btn-primary w-100">
-          Open Email App to Send
+          Create Meeting & Send Email
         </button>
       </form>
     </div>

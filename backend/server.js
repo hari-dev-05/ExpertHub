@@ -43,6 +43,86 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+
+// ----- Community Uploads (Posts) -----
+const Post = require("./post");
+const fs = require("fs");
+
+// Multer setup for posts (images/videos)
+const postStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = "public/uploads/posts";
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + "-" + file.originalname;
+    cb(null, uniqueName);
+  },
+});
+
+const postUpload = multer({
+  storage: postStorage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB max
+  fileFilter: (req, file, cb) => {
+    const allowed = ["image/", "video/"];
+    if (allowed.some((t) => file.mimetype.startsWith(t))) cb(null, true);
+    else cb(new Error("Only images and videos are allowed"));
+  },
+});
+
+// Serve uploaded posts publicly
+app.use("/public", express.static("public"));
+
+/* =======================================================
+   📤 Upload Post (Image/Video + Description)
+   Endpoint: POST /profile/:userId/uploadPost
+   ======================================================= */
+app.post("/profile/:userId/uploadPost", postUpload.single("file"), async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { description } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const fileType = req.file.mimetype.startsWith("image") ? "image" : "video";
+    const fileUrl = `/public/uploads/posts/${req.file.filename}`;
+
+    const newPost = new Post({
+      userId,
+      fileUrl,
+      fileType,
+      description,
+    });
+
+    await newPost.save();
+    res.status(201).json({ message: "Post uploaded successfully", post: newPost });
+  } catch (err) {
+    console.error("Error uploading post:", err);
+    res.status(500).json({ message: "Server error while uploading post" });
+  }
+});
+
+/* =======================================================
+   📥 Get All Posts by a User
+   Endpoint: GET /profile/:userId/posts
+   ======================================================= */
+app.get("/profile/:userId/posts", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const posts = await Post.find({ userId }).sort({ createdAt: -1 });
+    res.status(200).json(posts);
+  } catch (err) {
+    console.error("Error fetching posts:", err);
+    res.status(500).json({ message: "Failed to fetch posts" });
+  }
+});
+
+
+
+
 // ========================= PROFILE ROUTES ========================= //
 
 // Get or create profile by userId

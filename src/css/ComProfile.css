@@ -184,3 +184,96 @@
   transform: scale(1.05);
   box-shadow: 0 0 20px rgba(245, 197, 24, 0.3);
 }
+
+
+
+
+
+
+/* === Responsive Adjustments uploads === */
+
+.upload-section {
+  margin-top: 40px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.upload-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #222;
+}
+
+.upload-toggle {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.toggle-btn {
+  flex: 1;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 8px 0;
+  font-weight: 500;
+  cursor: pointer;
+  color: #333;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.toggle-btn.active {
+  background: linear-gradient(135deg, #007bff, #00bfa6);
+  color: white;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.toggle-btn:hover:not(.active) {
+  background: #f1f1f1;
+}
+
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.upload-box input[type="file"] {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 12px;
+  background: #fefefe;
+}
+
+.upload-box textarea {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 10px;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+  background: #fefefe;
+}
+
+.upload-btn {
+  background: linear-gradient(135deg, #007bff, #00bfa6);
+  border: none;
+  color: white;
+  font-weight: 500;
+  padding: 10px 0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-btn:hover {
+  opacity: 0.9;
+}

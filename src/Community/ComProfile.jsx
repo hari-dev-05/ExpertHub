@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { MapPin, Briefcase, Phone, Mail, Pencil } from "lucide-react";
+import { MapPin, Briefcase, Phone, Mail, Pencil, Upload, Image, Video } from "lucide-react";
 import { useAuth } from "../Pages/AuthContext";
 import "../css/ComProfile.css";
 
@@ -17,6 +17,12 @@ const ComProfile = ({ userId }) => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Upload Section State
+  const [uploadType, setUploadType] = useState("image");
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadDesc, setUploadDesc] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   // Fetch profile
   useEffect(() => {
@@ -86,12 +92,35 @@ const ComProfile = ({ userId }) => {
     }
   };
 
+  // New: handle post upload (image/video)
+  const handleUploadPost = async () => {
+    if (!uploadFile) return alert("Please select a file first.");
+    const data = new FormData();
+    data.append("file", uploadFile);
+    data.append("type", uploadType);
+    data.append("description", uploadDesc);
+
+    try {
+      setUploading(true);
+      await axios.post(`http://localhost:5000/profile/${userId}/uploadPost`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("Uploaded successfully!");
+      setUploadFile(null);
+      setUploadDesc("");
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert("Failed to upload file.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="profile-container">
-      {/* Profile Header */}
+      {/* Profile Card */}
       <div className="profile-card">
         <div className="profile-header">
-          {/* Profile Picture */}
           <div className="profile-pic-wrapper">
             <img
               src={
@@ -115,15 +144,11 @@ const ComProfile = ({ userId }) => {
             />
           </div>
 
-          {/* Name & Info */}
           <div className="profile-info">
             <h3>{profile.name || "Your Name"}</h3>
-
             <div className="profile-details">
               <div className="profile-group">
-                <p>
-                  <MapPin size={16} /> {profile.city || "City"}
-                </p>
+                <p><MapPin size={16} /> {profile.city || "City"}</p>
                 <p>
                   <Briefcase size={16} />{" "}
                   {Array.isArray(profile.skills)
@@ -131,16 +156,10 @@ const ComProfile = ({ userId }) => {
                     : profile.skills || "Skills"}
                 </p>
               </div>
-
               <div className="divider"></div>
-
               <div className="profile-group">
-                <p>
-                  <Phone size={16} /> {profile.phone || "Phone"}
-                </p>
-                <p>
-                  <Mail size={16} /> {profile.email || "Email"}
-                </p>
+                <p><Phone size={16} /> {profile.phone || "Phone"}</p>
+                <p><Mail size={16} /> {profile.email || "Email"}</p>
               </div>
             </div>
           </div>
@@ -161,11 +180,51 @@ const ComProfile = ({ userId }) => {
             />
           </div>
         ))}
-
         <button className="update-btn" onClick={handleUpdate}>
           Update Profile
         </button>
       </div>
+
+    {/* Upload Section */}
+<div className="upload-section">
+  <h3 className="upload-title">Share Something New</h3>
+
+  <div className="upload-toggle">
+    <button
+      className={`toggle-btn ${uploadType === "image" ? "active" : ""}`}
+      onClick={() => setUploadType("image")}
+    >
+      <Image size={18} /> Image
+    </button>
+    <button
+      className={`toggle-btn ${uploadType === "video" ? "active" : ""}`}
+      onClick={() => setUploadType("video")}
+    >
+      <Video size={18} /> Video
+    </button>
+  </div>
+
+  <div className="upload-box">
+    <input
+      type="file"
+      accept={uploadType === "image" ? "image/*" : "video/*"}
+      onChange={(e) => setUploadFile(e.target.files[0])}
+    />
+    <textarea
+      placeholder="Write a short description (optional)"
+      value={uploadDesc}
+      onChange={(e) => setUploadDesc(e.target.value)}
+    />
+    <button
+      className="upload-btn"
+      onClick={handleUploadPost}
+      disabled={uploading}
+    >
+      {uploading ? "Uploading..." : <><Upload size={16} /> Upload</>}
+    </button>
+  </div>
+</div>
+
     </div>
   );
 };

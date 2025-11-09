@@ -119,6 +119,17 @@ app.get("/profile/:userId/posts", async (req, res) => {
     res.status(500).json({ message: "Failed to fetch posts" });
   }
 });
+// 📸 Get all posts (for community feed)
+app.get("/posts", async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ createdAt: -1 }); // newest first
+    res.json(posts);
+  } catch (err) {
+    console.error("Error fetching all posts:", err);
+    res.status(500).json({ message: "Failed to fetch posts" });
+  }
+});
+
 
 
 

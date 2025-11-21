@@ -3,81 +3,82 @@ import axios from "axios";
 import { MapPin, Briefcase, Phone, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Pages/AuthContext";
-
+import "../css/ComPeople.css";
 
 const ComPeople = () => {
   const [profiles, setProfiles] = useState([]);
-const navigate = useNavigate();
-const {profileEmail} = useAuth();
-useEffect(() => {
-  if (!profileEmail) return; // wait until profileEmail is ready
+  const navigate = useNavigate();
+  const { profileEmail } = useAuth();
 
-  const fetchProfiles = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/profiles");
+  useEffect(() => {
+    if (!profileEmail) return;
 
-      // Filter out the logged-in user
-      const filteredData = res.data.filter(
-        (p) => p.email && p.email !== profileEmail
-      );
+    const fetchProfiles = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/profiles");
 
-      setProfiles(filteredData);
-    } catch (err) {
-      
-      console.error("Error fetching profiles:", err);
-    }
-  };
+        const filteredData = res.data.filter(
+          (p) => p.email && p.email !== profileEmail
+        );
 
-  fetchProfiles();
-}, [profileEmail]); // ✅ runs again when profileEmail is restored
+        setProfiles(filteredData);
+      } catch (err) {
+        console.error("Error fetching profiles:", err);
+      }
+    };
 
+    fetchProfiles();
+  }, [profileEmail]);
 
   return (
     <div
-      className="min-vh-100 py-5"
+      className="min-vh-100 py-5 community-wrapper"
       style={{
-        background: "linear-gradient(to bottom right, #f8fafc, #eef2f7)",
+        background: "linear-gradient(135deg, #233d4d, #1b2e3a)",
       }}
     >
       <div className="container">
         <h2
           className="fw-bold text-center mb-5"
           style={{
-            color: "#1f2937",
-            letterSpacing: "0.5px",
-            fontSize: "2rem",
+            background: "linear-gradient(to right, #ff6b00, #ff8f3d)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontSize: "2.2rem",
+            letterSpacing: "1px",
+            textShadow: "0 0 10px rgba(255, 107, 0, 0.35)",
           }}
         >
           Community Members
         </h2>
 
-        {/* Grid Layout */}
+        {/* Grid */}
         <div
           className="d-grid gap-4"
           style={{
-            gridTemplateColumns:
-              "repeat(auto-fill, minmax(250px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
           }}
         >
           {profiles.map((user) => (
             <div
               key={user._id}
-              className="p-4 shadow-sm border h-100 d-flex flex-column align-items-center text-center"
+              className="p-4 border h-100 d-flex flex-column align-items-center text-center"
               style={{
                 borderRadius: "18px",
-                backgroundColor: "#ffffff",
-                borderColor: "#e5e7eb",
-                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                background: "rgba(35, 61, 77, 0.88)",
+                borderColor: "rgba(255, 107, 0, 0.3)",
+                boxShadow: "0 0 18px rgba(0,0,0,0.2)",
+                transition: "0.3s ease",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-5px)";
                 e.currentTarget.style.boxShadow =
-                  "0 10px 25px rgba(0,0,0,0.1)";
+                  "0 12px 25px rgba(0,0,0,0.4)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
                 e.currentTarget.style.boxShadow =
-                  "0 4px 10px rgba(0,0,0,0.05)";
+                  "0 5px 12px rgba(0,0,0,0.25)";
               }}
             >
               {/* Profile Image */}
@@ -88,86 +89,96 @@ useEffect(() => {
                     : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
                 }
                 alt={user.name}
-                className="rounded-circle mb-3 border"
+                className="rounded-circle mb-3"
                 width="90"
                 height="90"
                 style={{
                   objectFit: "cover",
-                  borderColor: "#cbd5e1",
-                  transition: "transform 0.3s ease",
+                  border: "2px solid #ff6b00",
+                  padding: "2px",
+                  transition: "0.3s ease",
                 }}
               />
 
               {/* Name */}
               <h5
                 className="fw-semibold mb-1"
-                style={{
-                  color: "#1e293b",
-                  fontSize: "1.05rem",
-                }}
+                style={{ color: "#ffffff", fontSize: "1.1rem" }}
               >
                 {user.name || "Unnamed"}
               </h5>
 
               {/* City */}
               <p
-                className="mb-1 d-flex align-items-center justify-content-center text-muted"
-                style={{ fontSize: "0.9rem" }}
+                className="mb-1 d-flex align-items-center justify-content-center"
+                style={{ fontSize: "0.9rem", color: "#d1d7db" }}
               >
-                <MapPin size={16} className="me-1 text-primary" />
+                <MapPin size={16} className="me-1" color="#ff6b00" />
                 {user.city || "City"}
               </p>
 
               {/* Skills */}
               <p
                 className="mb-2 d-flex align-items-center justify-content-center"
-                style={{ fontSize: "0.9rem", color: "#475569" }}
+                style={{ fontSize: "0.9rem", color: "#ffb88a" }}
               >
-                <Briefcase size={16} className="me-1 text-info" />
+                <Briefcase size={16} className="me-1" color="#ff6b00" />
                 {user.skills || "Skills"}
               </p>
 
               <hr
                 style={{
                   width: "80%",
-                  border: "none",
-                  borderTop: "1px solid #e2e8f0",
-                  margin: "0.8rem 0",
+                  borderTop: "1px solid rgba(255, 107, 0, 0.35)",
                 }}
               />
 
               {/* Contact */}
-              <div style={{ fontSize: "0.85rem" }}>
-                <p className="mb-1 d-flex justify-content-center align-items-center text-secondary">
-                  <Phone size={14} className="me-1 text-success" />{" "}
+              <div style={{ fontSize: "0.85rem", color: "#e6e6e6" }}>
+                <p className="mb-1 d-flex justify-content-center align-items-center">
+                  <Phone size={14} className="me-1" color="#22c55e" />
                   {user.phone || "Phone"}
                 </p>
-                <p className="mb-0 d-flex justify-content-center align-items-center text-secondary">
-                  <Mail size={14} className="me-1 text-danger" />{" "}
+
+                <p className="mb-0 d-flex justify-content-center align-items-center">
+                  <Mail size={14} className="me-1" color="#ef4444" />
                   {user.email || "Email"}
                 </p>
               </div>
-<div className="d-flex gap-2 mt-3">
-  <button
-    className="btn btn-sm btn-primary"
-    style={{ borderRadius: "12px" }}
-    onClick={() => navigate(`/connected/${user.userId}`)}
-  >
-    Connect
-  </button>
+
+              {/* Connect Button */}
+              <div className="d-flex gap-2 mt-3">
+               <button
+  className="btn btn-sm"
+  style={{
+    background: "#ff6b00",
+    borderRadius: "12px",
+    border: "none",
+    fontWeight: 600,
+    color: "#000",
+    padding: "6px 18px",
+    transition: "0.25s ease",
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.background = "#ffffff"; // white
+    e.currentTarget.style.color = "#000000"; // black text
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.background = "#ff6b00"; // pumpkin orange
+    e.currentTarget.style.color = "#000000"; // black text
+  }}
+  onClick={() => navigate(`/connected/${user.userId}`)}
+>
+  Connect
+</button>
 
 
-
-</div>
-
-
-
-
+              </div>
             </div>
           ))}
 
           {profiles.length === 0 && (
-            <p className="text-center text-muted mt-5">
+            <p className="text-center mt-5" style={{ color: "#ffb88a" }}>
               No community members yet.
             </p>
           )}

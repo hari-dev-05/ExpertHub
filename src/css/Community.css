@@ -1,187 +1,216 @@
-/* === COMMUNITY PAGE THEME (Dark Mode) === */
+/* === COMMUNITY PAGE LAVENDER THEME ===
+   Palette inspired by provided reference image.
+*/
 
-.community-home {
-  background: linear-gradient(180deg, #0d0d0d 0%, #1a1a1a 100%);
-  min-height: 100vh;
-  color: #eaeaea;
-  text-align: center;
-  padding: 5rem 2rem;
-  font-family: "Inter", sans-serif;
+/* COLOR SYSTEM */
+:root{
+  --bg-soft: #eef0f6;          /* very pale lavender/cream background */
+  --hero-lilac: #e8e9f3;       /* soft lilac section color */
+  --accent-deep: #4b3b67;      /* deep muted purple */
+  --accent-medium: #7b6790;    /* medium lavender */
+  --accent-highlight: #c9a9ff; /* soft light purple */
+  --muted-gray: #7a7e86;       /* gray for paragraph text */
+  --text-dark: #0f1720;
+  --white: #ffffff;
+  --radius: 16px;
 }
 
+/* BASIC RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--bg-soft);
+  color: var(--text-dark);
+}
+
+/* MAIN WRAPPER */
+.community-home {
+  background: transparent;
+  min-height: 100vh;
+  text-align: center;
+  padding: 5rem 2rem;
+}
+
+/* TITLES */
 .community-title {
   font-size: 2.8rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--accent-deep);
 }
 
 .highlight-text {
-  color: #f5c518;
+  color: var(--accent-highlight);
 }
 
 .community-subtext {
-  color: #b5b5b5;
-  font-size: 1.1rem;
+  color: var(--muted-gray);
+  font-size: 1.05rem;
   margin-top: 1rem;
-  margin-bottom: 4rem;
+  margin-bottom: 3.5rem;
 }
 
-/* Cards */
+/* CARD WRAPPER */
 .community-cards {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 2rem;
-  margin-bottom: 4rem;
+  margin-bottom: 3.5rem;
 }
 
+/* CARD DESIGN */
 .card-box {
-  background: #121212;
-  border: 1px solid #2a2a2a;
-  border-radius: 16px;
+  background: linear-gradient(180deg, var(--white), var(--hero-lilac));
+  border-radius: var(--radius);
   width: 280px;
   padding: 2rem;
-  box-shadow: 0 0 15px rgba(245, 197, 24, 0.08);
-  transition: all 0.3s ease;
+  border: 1px solid rgba(74,58,96,0.06);
+  box-shadow: 0 12px 30px rgba(79,63,113,0.08);
+  transition: transform 0.32s cubic-bezier(.2,.9,.3,1), 
+              box-shadow 0.32s;
 }
 
 .card-box h5 {
   font-size: 1.3rem;
-  color: #fff;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  color: var(--accent-deep);
+  font-weight: 700;
+  margin-bottom: 0.8rem;
 }
 
 .card-box p {
   font-size: 0.95rem;
-  color: #ccc;
+  color: var(--muted-gray);
+  line-height: 1.6;
 }
 
-/* Glow hover */
 .card-box:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 0 25px rgba(245, 197, 24, 0.2);
+  transform: translateY(-8px);
+  box-shadow: 0 24px 60px rgba(79,63,113,0.16);
 }
 
-/* Accent Variants */
-.purple:hover {
-  box-shadow: 0 0 25px rgba(155, 89, 182, 0.3);
-}
-.orange:hover {
-  box-shadow: 0 0 25px rgba(243, 156, 18, 0.3);
-}
-.green:hover {
-  box-shadow: 0 0 25px rgba(39, 174, 96, 0.3);
-}
-.red:hover {
-  box-shadow: 0 0 25px rgba(231, 76, 60, 0.3);
+/* ACCENT TOP BORDERS */
+.purple { border-top: 4px solid var(--accent-deep); }
+.orange { border-top: 4px solid var(--accent-medium); }
+.green  { border-top: 4px solid #6f8a6f; }
+.red    { border-top: 4px solid #d7869a; }
+
+/* SPECIAL LARGE CENTER CARD */
+.red.large-center {
+  grid-column: 2/3;
+  min-height: 220px;
+  width: 340px;
 }
 
+/* SIDEBAR */
 .sidebar {
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh; /* Full height of viewport */
-  width: 250px; /* Adjust width to fit your layout */
-  background-color: #111827; /* Or your theme color */
-  overflow-y: auto; /* So the sidebar itself can scroll if needed */
-  color: white;
-  z-index: 100; /* Keeps it above other content */
+  height: 100vh;
+  width: 250px;
+  background: linear-gradient(180deg, var(--accent-deep), #3d3356);
+  overflow-y: auto;
+  color: var(--white);
+  padding: 28px;
+  z-index: 100;
+  border-right: 1px solid rgba(255,255,255,0.03);
 }
 
-/* Footer */
+.sidebar h4 {
+  color: var(--accent-highlight);
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.sidebar-link {
+  color: rgba(255,255,255,0.9) !important;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  transition: all 0.25s;
+}
+
+.sidebar-link svg {
+  color: var(--accent-highlight);
+  transition: color 0.25s;
+}
+
+.sidebar-link:hover {
+  background: rgba(201,169,255,0.08);
+  color: var(--text-dark) !important;
+  transform: translateX(6px);
+}
+
+.sidebar-link.active {
+  background: var(--accent-highlight);
+  color: var(--accent-deep) !important;
+  font-weight: 700;
+  border: 1px solid rgba(201,169,255,0.16);
+  box-shadow: 0 8px 30px rgba(123,103,144,0.14);
+}
+
+.sidebar-link.active svg {
+  color: var(--accent-deep) !important;
+}
+
+/* FOOTER */
 .community-footer {
-  color: #888;
+  color: var(--muted-gray);
   font-size: 1rem;
   margin-top: 2rem;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .community-title {
-    font-size: 2rem;
-  }
-  .card-box {
-    width: 90%;
-  }
-}
-
-/* === SIDEBAR DARK THEME === */
-
-.sidebar {
-  background: #0d0d0d; /* deep black background */
-  border-right: 1px solid #1f1f1f;
-  min-height: 100vh;
-  color: #eaeaea;
-  font-family: "Inter", sans-serif;
-  box-shadow: inset -2px 0 4px rgba(255, 215, 0, 0.05);
-}
-
-/* Sidebar Title */
-.sidebar h4 {
-  color: #f5c518;
+/* BUTTONS */
+.btn-primary {
+  background: linear-gradient(90deg, var(--accent-highlight), #ffd7ff);
+  color: var(--accent-deep);
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
   font-weight: 700;
-  letter-spacing: 0.5px;
 }
 
-/* Sidebar Links */
-.sidebar-link {
-  color: #bdbdbd !important;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(123,103,144,0.12);
+}
+
+.btn-ghost {
   background: transparent;
-  font-weight: 500;
+  border: 1px solid rgba(74,58,96,0.06);
+  padding: 9px 16px;
+  border-radius: 999px;
 }
 
-.sidebar-link svg {
-  color: #f5c518;
-  transition: color 0.3s ease;
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .red.large-center { width: 100%; }
 }
 
-/* Hover State */
-.sidebar-link:hover {
-  background: rgba(245, 197, 24, 0.1);
-  color: #fff !important;
-  transform: translateX(4px);
-  border: 1px solid rgba(245, 197, 24, 0.15);
-}
+@media (max-width: 760px) {
+  .community-title { font-size: 2rem; }
+  .card-box { width: 92%; }
 
-/* Active State */
-.sidebar-link.active {
-  background: #f5c518 !important;
-  color: #0d0d0d !important;
-  font-weight: 600;
-  border: 1px solid #f5c518;
-  box-shadow: 0 0 15px rgba(245, 197, 24, 0.3);
-  transform: translateX(4px);
-}
-
-.sidebar-link.active svg {
-  color: #0d0d0d !important;
-}
-
-/* Smooth transition for icons and text */
-.sidebar-link,
-.sidebar-link svg {
-  transition: all 0.25s ease-in-out;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
   .sidebar {
-    min-height: auto;
+    position: relative;
+    height: auto;
+    width: 100%;
     border-right: none;
-    border-bottom: 1px solid #1f1f1f;
-  }
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  } 
+}
 
-  .sidebar-link {
-    justify-content: center;
-    padding: 0.75rem 0.5rem;
-    font-size: 0.9rem;
-  }
-
-  .sidebar h4 {
-    font-size: 1.2rem;
-  }
+/* ACCESSIBILITY */
+a:focus,
+button:focus {
+  outline: 3px solid rgba(201,169,255,0.18);
+  outline-offset: 3px;
 }

@@ -19,8 +19,7 @@ const Meeting = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}
-/profile/${userId}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/profile/${userId}`);
         setProfile(res.data);
       } catch (err) {
         console.error("Error fetching profile:", err);
@@ -69,9 +68,7 @@ ${from}
     const body = encodeURIComponent(bodyText);
 
     // 📧 Gmail compose link
-    const gmailLink = `https://mail.google.com/mail/?view=cm&to=${to}&cc=${from}&su=${encodeURIComponent(
-      subject
-    )}&body=${body}`;
+    const gmailLink = `https://mail.google.com/mail/?view=cm&to=${to}&cc=${from}&su=${encodeURIComponent(subject)}&body=${body}`;
 
     // Open Gmail compose window
     window.open(gmailLink, "_blank", "noopener,noreferrer");

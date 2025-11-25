@@ -21,8 +21,7 @@ function Login() {
     }
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}
-/login`, { email, password });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password });
       setUser(res.data.user);
       setMessage(res.data.message);
       setMessageColor("green");

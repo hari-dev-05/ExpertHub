@@ -47,8 +47,7 @@ const ConnectedPerson = () => {
     const fetchMessages = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}
-/messages/${currentUserId}/${userId}`
+          `${import.meta.env.VITE_API_URL}/messages/${currentUserId}/${userId}`
         );
         if (res.data && res.data.length > 0) {
           setMessages(res.data);
@@ -70,8 +69,7 @@ const ConnectedPerson = () => {
 useEffect(() => {
   const fetchProfile = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}
-/profile/${userId}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/profile/${userId}`);
       setProfile(res.data);
 
       // ✅ Log both emails once profile is loaded
@@ -123,8 +121,7 @@ useEffect(() => {
 
     try {
       await axios.delete(
-        `${import.meta.env.VITE_API_URL}
-/messages/${currentUserId}/${userId}`
+        `${import.meta.env.VITE_API_URL}/messages/${currentUserId}/${userId}`
       );
       if (chatKey) localStorage.removeItem(chatKey);
       setMessages([]);
@@ -147,8 +144,7 @@ useEffect(() => {
             <img
               src={
                 profile?.image
-                  ? `${import.meta.env.VITE_API_URL}
-/${profile.image}`
+                  ? `${import.meta.env.VITE_API_URL}/${profile.image}`
                   : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
               }
               alt={profile?.name}
@@ -281,8 +277,7 @@ onClick={() => navigate(`/meeting/${userId}`)}
               <img
                 src={
                   profile.image
-                    ? `${import.meta.env.VITE_API_URL}
-/${profile.image}`
+                    ? `${import.meta.env.VITE_API_URL}/${profile.image}`
                     : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
                 }
                 alt={profile.name}

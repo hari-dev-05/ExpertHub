@@ -15,8 +15,7 @@ const ComPeople = () => {
 
     const fetchProfiles = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}
-/profiles`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/profiles`);
 
         const filteredData = res.data.filter(
           (p) => p.email && p.email !== profileEmail
@@ -84,12 +83,7 @@ const ComPeople = () => {
             >
               {/* Profile Image */}
               <img
-                src={
-                  user.image
-                    ? `${import.meta.env.VITE_API_URL}
-/${user.image}`
-                    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                }
+                src={user.image? `${import.meta.env.VITE_API_URL}/${user.image}` : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"  }
                 alt={user.name}
                 className="rounded-circle mb-3"
                 width="90"

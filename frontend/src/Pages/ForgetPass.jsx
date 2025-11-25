@@ -38,8 +38,7 @@ const ForgetPass = () => {
     try {
       setLoading(true);
       setMessage("");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}
-/send-otp`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -96,8 +95,7 @@ const ForgetPass = () => {
     console.log("Password reset for:", loginEmail);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}
-/reset-password`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: loginEmail, newPassword: newPass }),

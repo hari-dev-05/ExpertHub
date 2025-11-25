@@ -19,7 +19,8 @@ const Meeting = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/profile/${userId}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}
+/profile/${userId}`);
         setProfile(res.data);
       } catch (err) {
         console.error("Error fetching profile:", err);

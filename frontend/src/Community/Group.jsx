@@ -12,7 +12,8 @@ const Group = () => {
  useEffect(() => {
   const fetchPosts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/posts");
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}
+/posts`);
       setPosts(res.data);
     } catch (err) {
       console.error("❌ Error fetching posts:", err);
@@ -37,13 +38,15 @@ return (
         <div key={post._id} className="post-card">
           {post.fileType === "image" ? (
             <img
-              src={`http://localhost:5000${post.fileUrl}`}
+              src={`${import.meta.env.VITE_API_URL}
+${post.fileUrl}`}
               alt="Post"
               className="post-media"
             />
           ) : (
             <video
-              src={`http://localhost:5000${post.fileUrl}`}
+              src={`${import.meta.env.VITE_API_URL}
+${post.fileUrl}`}
               controls
               className="post-media"
             />

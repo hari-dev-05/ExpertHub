@@ -4,6 +4,7 @@ const User = require('./mongo');
 const Message = require("./message");
 const nodemailer = require("nodemailer");
 
+require("dotenv").config();
 
 const bcrypt = require('bcrypt');
 const Profile = require('./profile');

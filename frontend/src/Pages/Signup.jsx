@@ -22,7 +22,8 @@ const Signup = () => {
     }
 
     try {
-      await axios.post("http://localhost:5000/register", { email, password });
+      await axios.post(`${import.meta.env.VITE_API_URL}
+/register`, { email, password });
       setMessage("Account created successfully!");
       setMessageColor("green");
       setAccEmail(email);

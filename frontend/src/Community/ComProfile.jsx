@@ -30,7 +30,8 @@ const ComProfile = ({ userId }) => {
 
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/profile/${userId}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}
+/profile/${userId}`);
         const data = res.data;
         setProfile(data);
         setForm({
@@ -63,7 +64,8 @@ const ComProfile = ({ userId }) => {
 
   const handleUpdate = async () => {
     try {
-      const res = await axios.put(`http://localhost:5000/profile/${userId}`, form);
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}
+/profile/${userId}`, form);
       setProfile(res.data);
       alert("Profile updated successfully!");
     } catch (err) {
@@ -81,7 +83,8 @@ const ComProfile = ({ userId }) => {
 
     try {
       const res = await axios.post(
-        `http://localhost:5000/profile/upload/${userId}`,
+        `${import.meta.env.VITE_API_URL}
+/profile/upload/${userId}`,
         data,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -102,7 +105,8 @@ const ComProfile = ({ userId }) => {
 
     try {
       setUploading(true);
-      await axios.post(`http://localhost:5000/profile/${userId}/uploadPost`, data, {
+      await axios.post(`${import.meta.env.VITE_API_URL}
+/profile/${userId}/uploadPost`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("Uploaded successfully!");
@@ -125,7 +129,8 @@ const ComProfile = ({ userId }) => {
             <img
               src={
                 profile.image
-                  ? `http://localhost:5000/${profile.image}`
+                  ? `${import.meta.env.VITE_API_URL}
+/${profile.image}`
                   : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
               }
               alt="Profile"

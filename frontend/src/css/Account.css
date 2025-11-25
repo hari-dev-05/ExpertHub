@@ -1,0 +1,126 @@
+/* Account page styles — matches the SkillBridge dark + yellow theme
+   These rules intentionally override inline styles (use !important where necessary)
+*/
+
+/* Outer full-height container (overrides the inline blue gradient) */
+.d-flex.justify-content-center.align-items-center.vh-100 {
+  background: radial-gradient(circle at center, #0d0d0d 0%, #000000 100%) !important;
+  color: #e8e8e8;
+  padding: 3rem 1rem;
+  box-sizing: border-box;
+}
+
+/* Card container (replaces white card with dark translucent card + yellow top stripe) */
+.text-center.bg-white.shadow-lg.p-5.rounded-4 {
+  /* translucent panel to keep depth, matching hero theme */
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)) !important;
+  width: 420px !important;
+  min-height: 320px !important;
+  border-top: 6px solid #facc15 !important; /* yellow highlight */
+  -webkit-box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+  border-radius: 16px !important;
+  padding: 2.25rem !important; /* stronger padding than bootstrap p-5 to align spacing */
+  backdrop-filter: blur(6px);
+  color: #e6e6e6;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Heading */
+.text-center.bg-white.shadow-lg.p-5.rounded-4 h2 {
+  color: #facc15 !important;     /* yellow highlight */
+  letter-spacing: 1px !important;
+  margin-bottom: 1.25rem !important;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+/* Email row styling (overrides border-bottom) */
+.text-center.bg-white.shadow-lg.p-5.rounded-4 .d-flex.justify-content-between.align-items-center.px-3.py-2.border-bottom.mb-3 {
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  padding: 0.75rem 0.75rem !important;
+  margin-bottom: 1rem !important;
+  align-items: center;
+}
+
+/* Label (Email:) */
+.text-center.bg-white.shadow-lg.p-5.rounded-4 h5 {
+  color: #cfcfcf;
+  font-size: 0.95rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Value (user email) */
+.text-center.bg-white.shadow-lg.p-5.rounded-4 p {
+  color: #ffffff;
+  margin: 0;
+  font-weight: 600;
+  word-break: break-all;
+  font-size: 0.95rem;
+}
+
+/* small descriptive paragraph */
+.text-center.bg-white.shadow-lg.p-5.rounded-4 p.text-muted {
+  color: #b3b3b3 !important;
+  font-size: 0.9rem;
+  margin-top: 0.9rem;
+  line-height: 1.45;
+}
+
+/* Logout button: change danger to theme yellow and rounded-pill look */
+.btn.btn-outline-danger {
+  background: transparent !important;
+  color: #facc15 !important;
+  border-color: rgba(250,204,21,0.95) !important;
+  border-width: 1.5px !important;
+  padding: 0.6rem 1.4rem !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  transition: all 180ms ease !important;
+  box-shadow: 0 6px 18px rgba(250,204,21,0.06) !important;
+}
+
+/* Button hover/focus */
+.btn.btn-outline-danger:hover,
+.btn.btn-outline-danger:focus {
+  background: #facc15 !important;
+  color: #000 !important;
+  transform: translateY(-1px);
+  text-decoration: none;
+  border-color: #facc15 !important;
+  box-shadow: 0 12px 30px rgba(250,204,21,0.12) !important;
+}
+
+/* Make sure links / anything inside card follow theme */
+.text-center.bg-white.shadow-lg.p-5.rounded-4 a {
+  color: #facc15;
+  text-decoration: none;
+}
+
+/* Responsive: smaller widths on mobile */
+@media (max-width: 480px) {
+  .text-center.bg-white.shadow-lg.p-5.rounded-4 {
+    width: 92% !important;
+    padding: 1.25rem !important;
+    min-height: 260px !important;
+  }
+
+  .text-center.bg-white.shadow-lg.p-5.rounded-4 h2 {
+    font-size: 1.25rem;
+  }
+
+  .btn.btn-outline-danger {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.95rem;
+  }
+}
+
+/* Optional micro-animations to tie with rest of app (useful if framer-motion wrapped parent) */
+.text-center.bg-white.shadow-lg.p-5.rounded-4 {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}

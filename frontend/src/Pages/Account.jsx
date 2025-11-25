@@ -1,6 +1,7 @@
 import React from "react";
 import { useAuth } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
+import "../css/Account.css";
 
 const Account = () => {
   const { user, logout } = useAuth(); // use full user object

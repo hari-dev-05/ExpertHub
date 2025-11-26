@@ -6,7 +6,7 @@ import { useAuth } from "./AuthContext";
 import "../css/Signup.css";
 
 const Signup = () => {
-  const { setAccEmail } = useAuth();
+  const { setProfileEmail } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,30 +22,40 @@ const handleSignup = async () => {
   }
 
   try {
-    let res;
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/register`,
+      { email, password },
+      { headers: { "Content-Type": "application/json" } }
+    );
 
-    // FIRST TRY (might fail because Render is sleeping)
-    try {
-      res = await axios.post(`${import.meta.env.VITE_API_URL}/register`,{ email, password },{ timeout: 8000 });
-    } catch (err) {
-      console.log("⏳ Render server waking up... retrying...");
-      await new Promise((r) => setTimeout(r, 1500));
+    console.log("✅ BACKEND RESPONSE (SUCCESS):", res);   // 👈 PRINT SUCCESS
 
-      // SECOND TRY (successful once Render wakes up)
-      res = await axios.post(`${import.meta.env.VITE_API_URL}/register`,{ email, password },{ timeout: 8000 });
+    if (res.status === 201) {
+      setMessage("Account created successfully!");
+      setMessageColor("green");
+      setProfileEmail(email);
+
+
+      setTimeout(() => navigate("/login"), 1200);
     }
 
-    // SUCCESS RESPONSE
-    setMessage("Account created successfully!");
-    setMessageColor("green");
-    setAccEmail(email);
-
-    setTimeout(() => navigate("/"), 1500);
   } catch (error) {
-    setMessage("Something went wrong. Please try again.");
+
+    console.log("❌ BACKEND RESPONSE (ERROR):", error);   // 👈 PRINT ERROR
+
+    if (error.response) {
+      console.log("📩 ERROR RESPONSE FROM BACKEND:", error.response.data);   // 👈 PRINT EXACT SERVER MESSAGE
+      setMessage(error.response.data.message || "Something went wrong.");
+    } else {
+      console.log("🌐 NETWORK / CORS ERROR:", error);  // 👈 PRINT NETWORK FAILURE
+      setMessage("Cannot connect to server. Check backend.");
+    }
+
     setMessageColor("red");
   }
 };
+
+
 
 
   const handleLoginNavigation = () => {

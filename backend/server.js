@@ -37,12 +37,15 @@ app.use(cors({
   origin: [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://expert-hub-three.vercel.app"   // ONLY production URL!
+    "https://expert-hub-three.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
+
+// ADD THIS LINE:
+app.options("*", cors());
 
 
 app.use(express.json());
@@ -309,14 +312,22 @@ app.post("/reset-password", async (req, res) => {
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
 
+  console.log("📩 REGISTER REQUEST RECEIVED");
+  console.log("➡ Email:", email);
+  console.log("➡ Password length:", password?.length);
+
   if (!email || !password) {
+    console.log("❌ Missing email or password");
     return res.status(400).json({ message: 'Email and password are required' });
   }
 
   try {
+    console.log("🔍 Checking if user exists…");
+
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
+      console.log("⚠ USER EXISTS:", email);
       return res.status(409).json({
         message: 'User already exists',
         error: 'USER_EXISTS'
@@ -324,26 +335,34 @@ app.post('/register', async (req, res) => {
     }
 
     if (password.length < 6) {
+      console.log("⚠ WEAK PASSWORD");
       return res.status(400).json({
         message: 'Password must be at least 6 characters',
         error: 'WEAK_PASSWORD'
       });
     }
 
+    console.log("🔐 Hashing password…");
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    console.log("📝 Creating user...");
     const newUser = new User({ email, password: hashedPassword });
     await newUser.save();
 
-    // FIX RIGHT HERE
+    console.log("👍 USER SAVED:", newUser._id);
+
     const safeUser = newUser.toObject();
     delete safeUser.password;
 
+    console.log("🆕 Creating profile...");
     const profile = new Profile({ userId: newUser._id, email: newUser.email });
     await profile.save();
 
+    console.log("✅ REGISTER SUCCESS — SENDING 201");
     return res.status(201).json({ message: 'User registered', user: safeUser });
+
   } catch (error) {
-    console.error("REGISTER ERROR:", error);
+    console.log("❌ REGISTER ERROR:", error);
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 });

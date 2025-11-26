@@ -38,7 +38,8 @@ app.use(cors({
   origin: [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://expert-hub-three.vercel.app"
+    "https://expert-hub-three.vercel.app",
+    "https://expert-fi9hnnbzt-haris-projects-405077a9.vercel.app"
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true

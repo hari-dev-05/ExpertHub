@@ -22,18 +22,27 @@ const Signup = () => {
     }
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/register`, { email, password });
-      setMessage("Account created successfully!");
-      setMessageColor("green");
-      setAccEmail(email);
-      setTimeout(() => navigate("/"), 2000);
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/register`,
+        { email, password },
+        { withCredentials: false }   // prevent browser blocking the request
+      );
+
+      // Accept 200 OR 201 as success
+      if (res.status === 200 || res.status === 201) {
+        setMessage("Account created successfully!");
+        setMessageColor("green");
+        setAccEmail(email);
+        setTimeout(() => navigate("/"), 2000);
+        return;
+      }
     } catch (error) {
       if (error.response) {
         if (error.response.status === 409) {
           setMessage("This email is already registered. Please login.");
         } else {
           setMessage(
-            error.response.data.message || "Something went wrong. Try again."
+            error.response.data?.message || "Something went wrong. Try again."
           );
         }
       } else {
@@ -44,7 +53,6 @@ const Signup = () => {
   };
 
   const handleLoginNavigation = () => {
-    // Add a small delay for smooth fade out before navigating
     document.body.classList.add("page-fade-out");
     setTimeout(() => {
       navigate("/login");
@@ -61,7 +69,6 @@ const Signup = () => {
         exit={{ opacity: 0, y: -50 }}
         transition={{ duration: 0.6, ease: "easeInOut" }}
       >
-        {/* Right Illustration Section */}
         <div className="signup-right">
           <div className="signup-illustration">
             <img src="/illustration.jpg" alt="Learning illustration" />
@@ -72,7 +79,6 @@ const Signup = () => {
           </div>
         </div>
 
-        {/* Left Form Section */}
         <div className="signup-left">
           <div className="signup-form">
             <h1>Create Account</h1>

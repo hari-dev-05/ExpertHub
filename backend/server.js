@@ -25,26 +25,27 @@ const io = new Server(server, {
     origin: [
       "http://localhost:5173",
       "http://localhost:5174",
-      "https://expert-hub-three.vercel.app",
-      "https://expert-fi9hnnbzt-haris-projects-405077a9.vercel.app"
+      "https://expert-hub-three.vercel.app"   // ONLY production URL!
     ],
     methods: ["GET", "POST"],
     credentials: true
   }
 });
 
-
 // Configure CORS with specific options
 app.use(cors({
   origin: [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://expert-hub-three.vercel.app",
-    "https://expert-fi9hnnbzt-haris-projects-405077a9.vercel.app"
+    "https://expert-hub-three.vercel.app"   // ONLY production URL!
   ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
+
+// Must allow preflight
+app.options("*", cors());
 
 
 app.use(express.json());

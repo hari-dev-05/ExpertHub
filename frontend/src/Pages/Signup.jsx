@@ -15,49 +15,32 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const handleSignup = async () => {
-    if (!email || !password) {
-      setMessage("Please fill in both fields.");
-      setMessageColor("red");
+  if (!email || !password) {
+    setMessage("Please fill in both fields.");
+    setMessageColor("red");
+    return;
+  }
+
+  try {
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/register`,
+      { email, password }
+    );
+
+    if (res.status === 200 || res.status === 201) {
+      setMessage("Account created successfully!");
+      setMessageColor("green");
+      setAccEmail(email);
+      setTimeout(() => navigate("/"), 2000);
       return;
     }
 
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/register`,
-        { email, password },
-        { withCredentials: false }   // prevent browser blocking the request
-      );
-
-      // Accept 200 OR 201 as success
-      if (res.status === 200 || res.status === 201) {
-        setMessage("Account created successfully!");
-        setMessageColor("green");
-        setAccEmail(email);
-        setTimeout(() => navigate("/"), 2000);
-        return;
-      }
-   } catch (error) {
-  console.log("🔥 DEBUG ERROR OBJECT:", error);
-
-  if (error.response) {
-    console.log("🔥 DEBUG RESPONSE DATA:", error.response.data);
-    console.log("🔥 DEBUG STATUS:", error.response.status);
-
-    setMessage(
-      `DEBUG → ${error.response.status}: ${JSON.stringify(error.response.data)}`
-    );
-  } else if (error.request) {
-    console.log("🔥 DEBUG NO SERVER RESPONSE:", error.request);
-    setMessage("DEBUG → No response received from server");
-  } else {
-    console.log("🔥 DEBUG UNKNOWN ERROR:", error.message);
-    setMessage(`DEBUG → ${error.message}`);
+  } catch (error) {
+    setMessage("Something went wrong. Please try again.");
+    setMessageColor("red");
   }
+};
 
-  setMessageColor("red");
-}
-
-  };
 
   const handleLoginNavigation = () => {
     document.body.classList.add("page-fade-out");

@@ -44,9 +44,6 @@ app.use(cors({
   credentials: true
 }));
 
-// Must allow preflight
-app.options("/*", cors());
-
 
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));

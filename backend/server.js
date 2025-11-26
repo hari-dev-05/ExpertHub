@@ -305,7 +305,6 @@ app.post("/reset-password", async (req, res) => {
 
 
 // ========================= AUTH ROUTES ========================= //
-
 // Register
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
@@ -335,17 +334,20 @@ app.post('/register', async (req, res) => {
     const newUser = new User({ email, password: hashedPassword });
     await newUser.save();
 
-    const { password: pwd, ...safeUser } = newUser._doc;
+    // FIX RIGHT HERE
+    const safeUser = newUser.toObject();
+    delete safeUser.password;
 
     const profile = new Profile({ userId: newUser._id, email: newUser.email });
     await profile.save();
 
-    res.status(201).json({ message: 'User registered', user: safeUser });
+    return res.status(201).json({ message: 'User registered', user: safeUser });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error', error: 'SERVER_ERROR' });
+    console.error("REGISTER ERROR:", error);
+    return res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
+
 //socket
 app.get("/messages/:user1/:user2", async (req, res) => {
   const { user1, user2 } = req.params;

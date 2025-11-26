@@ -36,20 +36,27 @@ const Signup = () => {
         setTimeout(() => navigate("/"), 2000);
         return;
       }
-    } catch (error) {
-      if (error.response) {
-        if (error.response.status === 409) {
-          setMessage("This email is already registered. Please login.");
-        } else {
-          setMessage(
-            error.response.data?.message || "Something went wrong. Try again."
-          );
-        }
-      } else {
-        setMessage("Something went wrong. Try again.");
-      }
-      setMessageColor("red");
-    }
+   } catch (error) {
+  console.log("🔥 DEBUG ERROR OBJECT:", error);
+
+  if (error.response) {
+    console.log("🔥 DEBUG RESPONSE DATA:", error.response.data);
+    console.log("🔥 DEBUG STATUS:", error.response.status);
+
+    setMessage(
+      `DEBUG → ${error.response.status}: ${JSON.stringify(error.response.data)}`
+    );
+  } else if (error.request) {
+    console.log("🔥 DEBUG NO SERVER RESPONSE:", error.request);
+    setMessage("DEBUG → No response received from server");
+  } else {
+    console.log("🔥 DEBUG UNKNOWN ERROR:", error.message);
+    setMessage(`DEBUG → ${error.message}`);
+  }
+
+  setMessageColor("red");
+}
+
   };
 
   const handleLoginNavigation = () => {

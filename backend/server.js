@@ -25,7 +25,8 @@ const io = new Server(server, {
     origin: [
       "http://localhost:5173",
       "http://localhost:5174",
-      "https://expert-hub-three.vercel.app"   // YOUR VERCEL FRONTEND
+      "https://expert-hub-three.vercel.app",
+      "https://expert-fi9hnnbzt-haris-projects-405077a9.vercel.app"
     ],
     methods: ["GET", "POST"],
     credentials: true

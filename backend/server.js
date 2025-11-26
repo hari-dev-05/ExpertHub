@@ -44,8 +44,7 @@ app.use(cors({
   credentials: true
 }));
 
-// ADD THIS LINE:
-app.options("*", cors());
+
 
 
 app.use(express.json());

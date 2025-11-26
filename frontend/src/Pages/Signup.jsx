@@ -14,7 +14,7 @@ const Signup = () => {
   const [messageColor, setMessageColor] = useState("red");
   const navigate = useNavigate();
 
-  const handleSignup = async () => {
+const handleSignup = async () => {
   if (!email || !password) {
     setMessage("Please fill in both fields.");
     setMessageColor("red");
@@ -22,19 +22,25 @@ const Signup = () => {
   }
 
   try {
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/register`,
-      { email, password }
-    );
+    let res;
 
-    if (res.status === 200 || res.status === 201) {
-      setMessage("Account created successfully!");
-      setMessageColor("green");
-      setAccEmail(email);
-      setTimeout(() => navigate("/"), 2000);
-      return;
+    // FIRST TRY (might fail because Render is sleeping)
+    try {
+      res = await axios.post(`${import.meta.env.VITE_API_URL}/register`,{ email, password },{ timeout: 8000 });
+    } catch (err) {
+      console.log("⏳ Render server waking up... retrying...");
+      await new Promise((r) => setTimeout(r, 1500));
+
+      // SECOND TRY (successful once Render wakes up)
+      res = await axios.post(`${import.meta.env.VITE_API_URL}/register`,{ email, password },{ timeout: 8000 });
     }
 
+    // SUCCESS RESPONSE
+    setMessage("Account created successfully!");
+    setMessageColor("green");
+    setAccEmail(email);
+
+    setTimeout(() => navigate("/"), 1500);
   } catch (error) {
     setMessage("Something went wrong. Please try again.");
     setMessageColor("red");

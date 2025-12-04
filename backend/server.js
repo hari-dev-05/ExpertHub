@@ -4,7 +4,6 @@ const User = require('./mongo');
 const Message = require("./message");
 const nodemailer = require("nodemailer");
 
-require("dotenv").config();
 
 const bcrypt = require('bcrypt');
 const Profile = require('./profile');
@@ -22,30 +21,17 @@ const server = http.createServer(app);
 // Setup Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "https://expert-hub-three.vercel.app"   // ONLY production URL!
-    ],
-    methods: ["GET", "POST"],
-    credentials: true
+    origin: ["http://localhost:5173", "http://localhost:5174"], // frontend URLs
+    methods: ["GET", "POST"]
   }
 });
 
 // Configure CORS with specific options
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "https://expert-hub-three.vercel.app"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  origin: ["http://localhost:5173", "http://localhost:5174"],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true
 }));
-
-
-
 
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
@@ -56,97 +42,6 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
 });
 const upload = multer({ storage });
-
-
-// ----- Community Uploads (Posts) -----
-const Post = require("./post");
-const fs = require("fs");
-
-// Multer setup for posts (images/videos)
-const postStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = "public/uploads/posts";
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + file.originalname;
-    cb(null, uniqueName);
-  },
-});
-
-const postUpload = multer({
-  storage: postStorage,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB max
-  fileFilter: (req, file, cb) => {
-    const allowed = ["image/", "video/"];
-    if (allowed.some((t) => file.mimetype.startsWith(t))) cb(null, true);
-    else cb(new Error("Only images and videos are allowed"));
-  },
-});
-
-// Serve uploaded posts publicly
-app.use("/public", express.static("public"));
-
-/* =======================================================
-   📤 Upload Post (Image/Video + Description)
-   Endpoint: POST /profile/:userId/uploadPost
-   ======================================================= */
-app.post("/profile/:userId/uploadPost", postUpload.single("file"), async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const { description } = req.body;
-
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    const fileType = req.file.mimetype.startsWith("image") ? "image" : "video";
-    const fileUrl = `/public/uploads/posts/${req.file.filename}`;
-
-    const newPost = new Post({
-      userId,
-      fileUrl,
-      fileType,
-      description,
-    });
-
-    await newPost.save();
-    res.status(201).json({ message: "Post uploaded successfully", post: newPost });
-  } catch (err) {
-    console.error("Error uploading post:", err);
-    res.status(500).json({ message: "Server error while uploading post" });
-  }
-});
-
-/* =======================================================
-   📥 Get All Posts by a User
-   Endpoint: GET /profile/:userId/posts
-   ======================================================= */
-app.get("/profile/:userId/posts", async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const posts = await Post.find({ userId }).sort({ createdAt: -1 });
-    res.status(200).json(posts);
-  } catch (err) {
-    console.error("Error fetching posts:", err);
-    res.status(500).json({ message: "Failed to fetch posts" });
-  }
-});
-// 📸 Get all posts (for community feed)
-app.get("/posts", async (req, res) => {
-  try {
-    const posts = await Post.find().sort({ createdAt: -1 }); // newest first
-    res.json(posts);
-  } catch (err) {
-    console.error("Error fetching all posts:", err);
-    res.status(500).json({ message: "Failed to fetch posts" });
-  }
-});
-
-
-
-
 
 // ========================= PROFILE ROUTES ========================= //
 
@@ -307,26 +202,19 @@ app.post("/reset-password", async (req, res) => {
 
 
 // ========================= AUTH ROUTES ========================= //
+
 // Register
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
 
-  console.log("📩 REGISTER REQUEST RECEIVED");
-  console.log("➡ Email:", email);
-  console.log("➡ Password length:", password?.length);
-
   if (!email || !password) {
-    console.log("❌ Missing email or password");
     return res.status(400).json({ message: 'Email and password are required' });
   }
 
   try {
-    console.log("🔍 Checking if user exists…");
-
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      console.log("⚠ USER EXISTS:", email);
       return res.status(409).json({
         message: 'User already exists',
         error: 'USER_EXISTS'
@@ -334,38 +222,27 @@ app.post('/register', async (req, res) => {
     }
 
     if (password.length < 6) {
-      console.log("⚠ WEAK PASSWORD");
       return res.status(400).json({
         message: 'Password must be at least 6 characters',
         error: 'WEAK_PASSWORD'
       });
     }
 
-    console.log("🔐 Hashing password…");
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    console.log("📝 Creating user...");
     const newUser = new User({ email, password: hashedPassword });
     await newUser.save();
 
-    console.log("👍 USER SAVED:", newUser._id);
+    const { password: pwd, ...safeUser } = newUser._doc;
 
-    const safeUser = newUser.toObject();
-    delete safeUser.password;
-
-    console.log("🆕 Creating profile...");
     const profile = new Profile({ userId: newUser._id, email: newUser.email });
     await profile.save();
 
-    console.log("✅ REGISTER SUCCESS — SENDING 201");
-    return res.status(201).json({ message: 'User registered', user: safeUser });
-
+    res.status(201).json({ message: 'User registered', user: safeUser });
   } catch (error) {
-    console.log("❌ REGISTER ERROR:", error);
-    return res.status(500).json({ message: 'Server error', error: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: 'SERVER_ERROR' });
   }
 });
-
 //socket
 app.get("/messages/:user1/:user2", async (req, res) => {
   const { user1, user2 } = req.params;

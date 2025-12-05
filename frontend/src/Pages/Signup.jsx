@@ -6,7 +6,7 @@ import { useAuth } from "./AuthContext";
 import "../css/Signup.css";
 
 const Signup = () => {
-  const { setAccEmail } = useAuth();
+  const { setProfileEmail } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,37 +14,51 @@ const Signup = () => {
   const [messageColor, setMessageColor] = useState("red");
   const navigate = useNavigate();
 
-  const handleSignup = async () => {
-    if (!email || !password) {
-      setMessage("Please fill in both fields.");
-      setMessageColor("red");
-      return;
-    }
+const handleSignup = async () => {
+  if (!email || !password) {
+    setMessage("Please fill in both fields.");
+    setMessageColor("red");
+    return;
+  }
 
-    try {
-      await axios.post("http://localhost:5000/register", { email, password });
+  try {
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/register`,
+      { email, password },
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    console.log("✅ BACKEND RESPONSE (SUCCESS):", res);   // 👈 PRINT SUCCESS
+
+    if (res.status === 201) {
       setMessage("Account created successfully!");
       setMessageColor("green");
-      setAccEmail(email);
-      setTimeout(() => navigate("/"), 2000);
-    } catch (error) {
-      if (error.response) {
-        if (error.response.status === 409) {
-          setMessage("This email is already registered. Please login.");
-        } else {
-          setMessage(
-            error.response.data.message || "Something went wrong. Try again."
-          );
-        }
-      } else {
-        setMessage("Something went wrong. Try again.");
-      }
-      setMessageColor("red");
+      setProfileEmail(email);
+
+
+      setTimeout(() => navigate("/login"), 1200);
     }
-  };
+
+  } catch (error) {
+
+    console.log("❌ BACKEND RESPONSE (ERROR):", error);   // 👈 PRINT ERROR
+
+    if (error.response) {
+      console.log("📩 ERROR RESPONSE FROM BACKEND:", error.response.data);   // 👈 PRINT EXACT SERVER MESSAGE
+      setMessage(error.response.data.message || "Something went wrong.");
+    } else {
+      console.log("🌐 NETWORK / CORS ERROR:", error);  // 👈 PRINT NETWORK FAILURE
+      setMessage("Cannot connect to server. Check backend.");
+    }
+
+    setMessageColor("red");
+  }
+};
+
+
+
 
   const handleLoginNavigation = () => {
-    // Add a small delay for smooth fade out before navigating
     document.body.classList.add("page-fade-out");
     setTimeout(() => {
       navigate("/login");
@@ -61,7 +75,6 @@ const Signup = () => {
         exit={{ opacity: 0, y: -50 }}
         transition={{ duration: 0.6, ease: "easeInOut" }}
       >
-        {/* Right Illustration Section */}
         <div className="signup-right">
           <div className="signup-illustration">
             <img src="/illustration.jpg" alt="Learning illustration" />
@@ -72,7 +85,6 @@ const Signup = () => {
           </div>
         </div>
 
-        {/* Left Form Section */}
         <div className="signup-left">
           <div className="signup-form">
             <h1>Create Account</h1>

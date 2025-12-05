@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
-
+require("dotenv").config();
 // ✅ MongoDB connection
-mongoose.connect("mongodb://localhost:27017/userDB")
+const MONGO_URL = process.env.MONGO_URL;
+
+mongoose.connect(MONGO_URL)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch(err => console.log("❌ MongoDB Error:", err));
+
 
 // ✅ Define Schema for Email and Password
 const userSchema = new mongoose.Schema({

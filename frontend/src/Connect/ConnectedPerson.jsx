@@ -47,7 +47,7 @@ const ConnectedPerson = () => {
     const fetchMessages = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/messages/${currentUserId}/${userId}`
+          `${import.meta.env.VITE_API_URL}/messages/${currentUserId}/${userId}`
         );
         if (res.data && res.data.length > 0) {
           setMessages(res.data);
@@ -69,7 +69,7 @@ const ConnectedPerson = () => {
 useEffect(() => {
   const fetchProfile = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/profile/${userId}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/profile/${userId}`);
       setProfile(res.data);
 
       // ✅ Log both emails once profile is loaded
@@ -121,7 +121,7 @@ useEffect(() => {
 
     try {
       await axios.delete(
-        `http://localhost:5000/messages/${currentUserId}/${userId}`
+        `${import.meta.env.VITE_API_URL}/messages/${currentUserId}/${userId}`
       );
       if (chatKey) localStorage.removeItem(chatKey);
       setMessages([]);
@@ -142,11 +142,12 @@ useEffect(() => {
           {/* Profile Picture */}
           <div className="position-relative mb-3 mb-md-0 me-md-4">
             <img
-              src={
-                profile?.image
-                  ? `http://localhost:5000/${profile.image}`
-                  : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-              }
+             src={
+  profile?.image
+    ? profile.image
+    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+}
+
               alt={profile?.name}
               className="rounded-circle border border-2"
               width="120"
@@ -275,11 +276,12 @@ onClick={() => navigate(`/meeting/${userId}`)}
                 onClick={() => setShowChat(false)}
               />
               <img
-                src={
-                  profile.image
-                    ? `http://localhost:5000/${profile.image}`
-                    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                }
+               src={
+  profile?.image
+    ? profile.image
+    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+}
+
                 alt={profile.name}
                 className="rounded-circle border"
                 width="40"

@@ -1,0 +1,65 @@
+:root {
+  --pumpkin: #fe7f2d;
+}
+
+/* ===== UPLOAD SECTION (WHITE CARD) ===== */
+
+.upload-section {
+  width: 100%;
+  max-width: 900px;
+  margin-top: 40px;
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.upload-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.upload-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  background: #eee;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.toggle-btn.active {
+  background: var(--pumpkin);
+  color: white;
+}
+
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.upload-box input,
+.upload-box textarea {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.upload-btn {
+  background: var(--pumpkin);
+  padding: 10px 14px;
+  color: #fff;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}

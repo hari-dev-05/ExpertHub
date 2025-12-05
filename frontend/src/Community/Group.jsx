@@ -9,54 +9,54 @@ const Group = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
-  const fetchPosts = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/posts");
-      setPosts(res.data);
-    } catch (err) {
-      console.error("❌ Error fetching posts:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchPosts();
-}, []);
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/posts`);
+        setPosts(res.data);
+      } catch (err) {
+        console.error("❌ Error fetching posts:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
 
 
   if (loading) return <p>Loading posts...</p>;
 
-return (
-  <div className="feed-container">
-    <h2 className="feed-title">Your Posts</h2>
+  return (
+    <div className="feed-container">
+      <h2 className="feed-title">Your Posts</h2>
 
-    {posts.length === 0 ? (
-      <p className="empty-feed">No posts found.</p>
-    ) : (
-      posts.map((post) => (
-        <div key={post._id} className="post-card">
-          {post.fileType === "image" ? (
-            <img
-              src={`http://localhost:5000${post.fileUrl}`}
-              alt="Post"
-              className="post-media"
-            />
-          ) : (
-            <video
-              src={`http://localhost:5000${post.fileUrl}`}
-              controls
-              className="post-media"
-            />
-          )}
-          <p className="post-desc">{post.description}</p>
-          <p className="post-time">
-            {new Date(post.createdAt).toLocaleString()}
-          </p>
-        </div>
-      ))
-    )}
-  </div>
-);
+      {posts.length === 0 ? (
+        <p className="empty-feed">No posts found.</p>
+      ) : (
+        posts.map((post) => (
+          <div key={post._id} className="post-card">
+            {post.fileType === "image" ? (
+              <img
+                src={post.fileUrl}
+                alt="Post"
+                className="post-media"
+              />
+            ) : (
+              <video
+                src={post.fileUrl}
+                controls
+                className="post-media"
+              />
+            )}
+            <p className="post-desc">{post.description}</p>
+            <p className="post-time">
+              {new Date(post.createdAt).toLocaleString()}
+            </p>
+          </div>
+        ))
+      )}
+    </div>
+  );
 
 };
 

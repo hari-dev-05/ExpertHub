@@ -8,8 +8,13 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './Pages/AuthContext.jsx';
 
 createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-    <AuthProvider>   
+  <BrowserRouter
+    future={{
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    }}
+  >
+    <AuthProvider>
       <StrictMode>
         <App />
       </StrictMode>

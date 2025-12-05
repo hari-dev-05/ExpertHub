@@ -4,11 +4,15 @@ const User = require('./mongo');
 const Message = require("./message");
 const nodemailer = require("nodemailer");
 
+const upload = require("./multer");
+const cloudinary = require("./cloudinary");
+
 
 const bcrypt = require('bcrypt');
 const Profile = require('./profile');
-const multer = require('multer');
-const path = require('path');
+const Post = require("./post");
+
+
 
 const app = express();
 
@@ -21,115 +25,19 @@ const server = http.createServer(app);
 // Setup Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"], // frontend URLs
+    origin: ["http://localhost:5173", "http://localhost:5174", "https://expert-hub-three.vercel.app"], // frontend URLs
     methods: ["GET", "POST"]
   }
 });
 
 // Configure CORS with specific options
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: ["http://localhost:5173", "http://localhost:5174", "https://expert-hub-three.vercel.app"],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true
 }));
 
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
-
-// Multer setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
-});
-const upload = multer({ storage });
-
-
-// ----- Community Uploads (Posts) -----
-const Post = require("./post");
-const fs = require("fs");
-
-// Multer setup for posts (images/videos)
-const postStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = "public/uploads/posts";
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + file.originalname;
-    cb(null, uniqueName);
-  },
-});
-
-const postUpload = multer({
-  storage: postStorage,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB max
-  fileFilter: (req, file, cb) => {
-    const allowed = ["image/", "video/"];
-    if (allowed.some((t) => file.mimetype.startsWith(t))) cb(null, true);
-    else cb(new Error("Only images and videos are allowed"));
-  },
-});
-
-// Serve uploaded posts publicly
-app.use("/public", express.static("public"));
-
-/* =======================================================
-   📤 Upload Post (Image/Video + Description)
-   Endpoint: POST /profile/:userId/uploadPost
-   ======================================================= */
-app.post("/profile/:userId/uploadPost", postUpload.single("file"), async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const { description } = req.body;
-
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    const fileType = req.file.mimetype.startsWith("image") ? "image" : "video";
-    const fileUrl = `/public/uploads/posts/${req.file.filename}`;
-
-    const newPost = new Post({
-      userId,
-      fileUrl,
-      fileType,
-      description,
-    });
-
-    await newPost.save();
-    res.status(201).json({ message: "Post uploaded successfully", post: newPost });
-  } catch (err) {
-    console.error("Error uploading post:", err);
-    res.status(500).json({ message: "Server error while uploading post" });
-  }
-});
-
-/* =======================================================
-   📥 Get All Posts by a User
-   Endpoint: GET /profile/:userId/posts
-   ======================================================= */
-app.get("/profile/:userId/posts", async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const posts = await Post.find({ userId }).sort({ createdAt: -1 });
-    res.status(200).json(posts);
-  } catch (err) {
-    console.error("Error fetching posts:", err);
-    res.status(500).json({ message: "Failed to fetch posts" });
-  }
-});
-// 📸 Get all posts (for community feed)
-app.get("/posts", async (req, res) => {
-  try {
-    const posts = await Post.find().sort({ createdAt: -1 }); // newest first
-    res.json(posts);
-  } catch (err) {
-    console.error("Error fetching all posts:", err);
-    res.status(500).json({ message: "Failed to fetch posts" });
-  }
-});
-
 
 
 
@@ -189,6 +97,64 @@ app.put('/user/email/:userId', async (req, res) => {
   }
 });
 
+
+// ========= UPLOAD POST (IMAGE/VIDEO) ========= //
+app.post("/profile/:userId/uploadPost", upload.single("file"), async (req, res) => {
+  console.log("Received upload request for user:", req.params.userId);
+  try {
+    const { userId } = req.params;
+
+    if (!req.file) {
+      console.log("No file in request");
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    console.log("File received:", req.file.originalname, "Size:", req.file.size, "Mime:", req.file.mimetype);
+
+    // Upload to Cloudinary
+    console.log("Starting Cloudinary upload...");
+    const uploaded = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "expert-hub/posts",
+          resource_type: "auto",
+        },
+        (err, result) => {
+          if (err) {
+            console.error("Cloudinary callback error:", err);
+            reject(err);
+          } else {
+            console.log("Cloudinary upload success:", result.secure_url);
+            resolve(result);
+          }
+        }
+      );
+      uploadStream.end(req.file.buffer);
+    });
+
+    // Save post in Post collection
+    console.log("Saving post to DB...");
+    const newPost = new Post({
+      userId,
+      fileUrl: uploaded.secure_url,
+      fileType: req.body.type,
+      description: req.body.description,
+    });
+
+    await newPost.save();
+    console.log("Post saved successfully");
+
+    res.status(200).json({
+      message: "Post uploaded successfully",
+      post: newPost,
+    });
+
+  } catch (error) {
+    console.error("UploadPost error:", error);
+    res.status(500).json({ message: "Upload failed", error: error.message });
+  }
+});
+
+
 // Update profile
 app.put('/profile/:userId', async (req, res) => {
   try {
@@ -201,21 +167,71 @@ app.put('/profile/:userId', async (req, res) => {
   }
 });
 
-// Upload profile image
+app.get("/posts", async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .populate("userId", "name image") // Get user name + image
+      .sort({ createdAt: -1 });
+
+    res.json(posts);
+  } catch (err) {
+    console.error("Error fetching posts:", err);
+    res.status(500).json({ error: "Failed to fetch posts" });
+  }
+});
+
+
+// Upload profile image to Cloudinary
 app.post('/profile/upload/:userId', upload.single('image'), async (req, res) => {
   try {
     const { userId } = req.params;
+
     const profile = await Profile.findOne({ userId });
     if (!profile) return res.status(404).json({ message: 'Profile not found' });
 
-    profile.image = req.file.path;
+    if (!req.file) {
+      return res.status(400).json({ message: "No image file uploaded" });
+    }
+
+    // Upload buffer to Cloudinary
+    const uploadToCloudinary = () => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "expert-hub/profiles",
+            resource_type: "image",
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+    };
+
+    const cloudinaryResult = await uploadToCloudinary();
+
+    // Save Cloudinary URL in MongoDB
+    profile.image = cloudinaryResult.secure_url;
     await profile.save();
-    res.status(200).json({ message: 'Image uploaded', profile });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+
+    res.status(200).json({
+      message: "Image uploaded successfully",
+      imageUrl: cloudinaryResult.secure_url,
+      profile,
+    });
+
+  } catch (error) {
+    console.error("Cloudinary upload error:", error);
+    res.status(500).json({ message: "Image upload failed" });
   }
 });
+
+
+
+// Upload posts (image/video) to Cloudinary
+
 
 
 
@@ -236,34 +252,34 @@ app.post("/send-otp", async (req, res) => {
       },
     });
     // ========================= RESET PASSWORD ========================= //
-app.post("/reset-password", async (req, res) => {
-  const { email, newPassword } = req.body;
+    app.post("/reset-password", async (req, res) => {
+      const { email, newPassword } = req.body;
 
-  if (!email || !newPassword) {
-    return res.status(400).json({ message: "Email and new password required" });
-  }
+      if (!email || !newPassword) {
+        return res.status(400).json({ message: "Email and new password required" });
+      }
 
-  try {
-    // Find existing user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+      try {
+        // Find existing user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
 
-    // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update the user password
-    user.password = hashedPassword;
-    await user.save();
+        // Update the user password
+        user.password = hashedPassword;
+        await user.save();
 
-    console.log(`🔑 Password updated for ${email}`);
-    res.json({ message: "Password updated successfully" });
-  } catch (error) {
-    console.error("❌ Error resetting password:", error);
-    res.status(500).json({ message: "Server error while resetting password" });
-  }
-});
+        console.log(`🔑 Password updated for ${email}`);
+        res.json({ message: "Password updated successfully" });
+      } catch (error) {
+        console.error("❌ Error resetting password:", error);
+        res.status(500).json({ message: "Server error while resetting password" });
+      }
+    });
 
 
     // Define email content
@@ -398,40 +414,40 @@ const connectedUsers = {}; // userId => [socketId, ...]
 io.on("connection", (socket) => {
   console.log("🟢 A user connected:", socket.id);
 
-socket.on("join", async (userId) => {
-  if (!connectedUsers[userId]) connectedUsers[userId] = [];
-  connectedUsers[userId].push(socket.id);
-  console.log(`User ${userId} connected with socket ${socket.id}`);
+  socket.on("join", async (userId) => {
+    if (!connectedUsers[userId]) connectedUsers[userId] = [];
+    connectedUsers[userId].push(socket.id);
+    console.log(`User ${userId} connected with socket ${socket.id}`);
 
-  // Send undelivered messages
-  const undelivered = await Message.find({ receiverId: userId, delivered: false });
-  undelivered.forEach(async (msg) => {
-    io.to(socket.id).emit("receiveMessage", { senderId: msg.senderId, text: msg.text });
-    msg.delivered = true;
-    await msg.save();
-  });
-});
-
-
-socket.on("sendMessage", async ({ senderId, receiverId, text }) => {
-  console.log(`Message from ${senderId} to ${receiverId}: ${text}`);
-
-  // 1️⃣ Save to database
-  const newMsg = new Message({ senderId, receiverId, text });
-  await newMsg.save();
-
-  // 2️⃣ If receiver is online, deliver instantly
-  const receiverSockets = connectedUsers[receiverId] || [];
-  if (receiverSockets.length > 0) {
-    receiverSockets.forEach(sockId => {
-      io.to(sockId).emit("receiveMessage", { senderId, text });
+    // Send undelivered messages
+    const undelivered = await Message.find({ receiverId: userId, delivered: false });
+    undelivered.forEach(async (msg) => {
+      io.to(socket.id).emit("receiveMessage", { senderId: msg.senderId, text: msg.text });
+      msg.delivered = true;
+      await msg.save();
     });
+  });
 
-    // mark as delivered
-    newMsg.delivered = true;
+
+  socket.on("sendMessage", async ({ senderId, receiverId, text }) => {
+    console.log(`Message from ${senderId} to ${receiverId}: ${text}`);
+
+    // 1️⃣ Save to database
+    const newMsg = new Message({ senderId, receiverId, text });
     await newMsg.save();
-  }
-});
+
+    // 2️⃣ If receiver is online, deliver instantly
+    const receiverSockets = connectedUsers[receiverId] || [];
+    if (receiverSockets.length > 0) {
+      receiverSockets.forEach(sockId => {
+        io.to(sockId).emit("receiveMessage", { senderId, text });
+      });
+
+      // mark as delivered
+      newMsg.delivered = true;
+      await newMsg.save();
+    }
+  });
 
   socket.on("disconnect", () => {
     console.log("🔴 A user disconnected:", socket.id);

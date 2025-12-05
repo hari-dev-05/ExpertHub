@@ -12,6 +12,7 @@
   color: #ffffff;
   text-shadow: 0 3px 14px rgba(0, 0, 0, 0.35)
 }
+
 @media (min-width: 768px) {
   .playfair {
     font-size: 1.35rem;
@@ -46,8 +47,10 @@ body::-webkit-scrollbar,
 html,
 body,
 #root {
-  -ms-overflow-style: none; /* IE/Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 /* Blur effect for modals */
@@ -127,9 +130,11 @@ body,
   0% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
+
   100% {
     transform: translateY(0px);
   }

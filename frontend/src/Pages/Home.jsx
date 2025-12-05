@@ -5,7 +5,7 @@ import "../css/Home.css";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   return (
     <div className="home-container">
       <motion.div
@@ -20,7 +20,7 @@ const Home = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2, duration: 1 }}
         >
-          <span className="highlight">SkillBridge.</span>  
+          <span className="highlight">SkillBridge.</span>
           A community-driven learning platform.
         </motion.h1>
 
@@ -34,14 +34,14 @@ const Home = () => {
           Build skills, share ideas, and connect meaningfully.
         </motion.p>
 
-       <motion.button
-  className="get-started-btn"
-  onClick={() => navigate("/community")}
-  whileHover={{ scale: 1.08 }}
-  whileTap={{ scale: 0.95 }}
->
-  Get Started
-</motion.button>
+        <motion.button
+          className="get-started-btn"
+          onClick={() => navigate("/community")}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Get Started
+        </motion.button>
 
       </motion.div>
 

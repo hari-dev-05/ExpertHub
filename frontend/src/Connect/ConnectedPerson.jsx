@@ -276,11 +276,12 @@ onClick={() => navigate(`/meeting/${userId}`)}
                 onClick={() => setShowChat(false)}
               />
               <img
-                src={
-                  profile.image
-                    ? `${import.meta.env.VITE_API_URL}/${profile.image}`
-                    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                }
+               src={
+  profile?.image
+    ? profile.image
+    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+}
+
                 alt={profile.name}
                 className="rounded-circle border"
                 width="40"

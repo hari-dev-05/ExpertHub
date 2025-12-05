@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { MapPin, Briefcase, Phone, Mail, Pencil, Upload, Image, Video } from "lucide-react";
+import { MapPin, Briefcase, Phone, Mail, Pencil } from "lucide-react";
 import { useAuth } from "../Pages/AuthContext";
 import "../css/ComProfile.css";
+import UploadBox from "../Community/UploadBox";
 
 const ComProfile = ({ userId }) => {
   const [profile, setProfile] = useState(null);
@@ -12,17 +13,12 @@ const ComProfile = ({ userId }) => {
     name: "",
     phone: "",
     email: "",
-    city: "",
+    city: "", 
     skills: "",
   });
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const [uploadType, setUploadType] = useState("image");
-  const [uploadFile, setUploadFile] = useState(null);
-  const [uploadDesc, setUploadDesc] = useState("");
-  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
@@ -31,6 +27,7 @@ const ComProfile = ({ userId }) => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/profile/${userId}`);
         const data = res.data;
+
         setProfile(data);
         setForm({
           name: data.name || "",
@@ -39,6 +36,7 @@ const ComProfile = ({ userId }) => {
           city: data.city || "",
           skills: data.skills || "",
         });
+
         setProfileEmail(data.email);
       } catch (err) {
         setError("Failed to fetch profile");
@@ -83,136 +81,86 @@ const ComProfile = ({ userId }) => {
     }
   };
 
-  const handleUploadPost = async () => {
-    if (!uploadFile) return alert("Select a file!");
-    const data = new FormData();
-    data.append("file", uploadFile);
-    data.append("type", uploadType);
-    data.append("description", uploadDesc);
-
-    try {
-      setUploading(true);
-      await axios.post(`${import.meta.env.VITE_API_URL}/profile/${userId}/uploadPost`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      alert("Uploaded!");
-      setUploadDesc("");
-      setUploadFile(null);
-    } catch (err) {
-      alert("Upload failed");
-    } finally {
-      setUploading(false);
-    }
-  };
-
   return (
     <div className="profile-container">
 
-      {/* ===== TOP PROFILE CARD ===== */}
+      {/* ===== PROFILE CARD ===== */}
       <div className="profile-card">
-
-        {/* LEFT: IMAGE */}
+        
+        {/* LEFT SIDE - IMAGE */}
         <div className="pic-section">
           <div className="profile-pic-wrapper">
-            <img
-             src={
-  profile.image
-    ? profile.image
-    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-}
 
+            <img
+              src={
+                profile.image
+                  ? profile.image
+                  : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              }
               className="profile-pic"
             />
 
             <label htmlFor="imageUpload" className="edit-icon">
               <Pencil size={14} />
             </label>
-            <input id="imageUpload" type="file" onChange={handleImageChange} style={{ display: "none" }} />
+
+            <input
+              id="imageUpload"
+              type="file"
+              onChange={handleImageChange}
+              style={{ display: "none" }}
+            />
           </div>
         </div>
 
-        {/* RIGHT: DETAILS + FORM */}
-     <div className="details-section">
-  
-  {/* DETAILS DISPLAY BLOCK */}
-  <div className="display-block">
-    <h2 className="profile-name">{form.name || "Your Name"}</h2>
+        {/* RIGHT SIDE - DETAILS */}
+        <div className="details-section">
 
-    <div className="info-row">
-      <MapPin size={16} />
-      <span>{form.city || "City"}</span>
-    </div>
+          <div className="display-block">
+            <h2 className="profile-name">{form.name || "Your Name"}</h2>
 
-    <div className="info-row">
-      <Briefcase size={16} />
-      <span>{form.skills || "Skills"}</span>
-    </div>
+            <div className="info-row">
+              <MapPin size={16} />
+              <span>{form.city || "City"}</span>
+            </div>
 
-    <div className="info-row">
-      <Phone size={16} />
-      <span>{form.phone || "Phone"}</span>
-    </div>
+            <div className="info-row">
+              <Briefcase size={16} />
+              <span>{form.skills || "Skills"}</span>
+            </div>
 
-    <div className="info-row">
-      <Mail size={16} />
-      <span>{form.email || "Email"}</span>
-    </div>
-  </div>
+            <div className="info-row">
+              <Phone size={16} />
+              <span>{form.phone || "Phone"}</span>
+            </div>
 
+            <div className="info-row">
+              <Mail size={16} />
+              <span>{form.email || "Email"}</span>
+            </div>
+          </div>
 
-          {/* FORM INPUTS */}
+          {/* Edit Inputs */}
           <div className="form-inputs">
             {["name", "phone", "email", "city", "skills"].map((field) => (
               <input
                 key={field}
                 type="text"
-                name={field}
                 value={form[field]}
                 placeholder={`Enter ${field}`}
                 onChange={(e) => setForm({ ...form, [field]: e.target.value })}
                 className="profile-input"
               />
             ))}
-
-            <button className="update-btn" onClick={handleUpdate}>Update Profile</button>
+            <button className="update-btn" onClick={handleUpdate}>
+              Update Profile
+            </button>
           </div>
         </div>
       </div>
 
-
-      {/* ===== SEPARATE WHITE UPLOAD SECTION ===== */}
-      <div className="upload-section">
-        <h3 className="upload-title">Share Something New</h3>
-
-        <div className="upload-toggle">
-          <button
-            className={`toggle-btn ${uploadType === "image" ? "active" : ""}`}
-            onClick={() => setUploadType("image")}
-          >
-            <Image size={18} /> Image
-          </button>
-
-          <button
-            className={`toggle-btn ${uploadType === "video" ? "active" : ""}`}
-            onClick={() => setUploadType("video")}
-          >
-            <Video size={18} /> Video
-          </button>
-        </div>
-
-        <div className="upload-box">
-          <input type="file" accept={uploadType + "/*"} onChange={(e) => setUploadFile(e.target.files[0])} />
-          <textarea
-            placeholder="Description (optional)"
-            value={uploadDesc}
-            onChange={(e) => setUploadDesc(e.target.value)}
-          />
-          <button className="upload-btn" onClick={handleUploadPost} disabled={uploading}>
-            {uploading ? "Uploading..." : <> <Upload size={16} /> Upload </>}
-          </button>
-        </div>
-      </div>
+      {/* === UPLOAD SECTION (separate component) === */}
+      <UploadBox userId={userId} />
 
     </div>
   );

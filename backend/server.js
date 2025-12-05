@@ -10,6 +10,8 @@ const cloudinary = require("./cloudinary");
 
 const bcrypt = require('bcrypt');
 const Profile = require('./profile');
+const Post = require("./post");
+
 
 
 const app = express();
@@ -107,6 +109,20 @@ app.put('/profile/:userId', async (req, res) => {
   }
 });
 
+app.get("/posts", async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .populate("userId", "name image") // Get user name + image
+      .sort({ createdAt: -1 });
+
+    res.json(posts);
+  } catch (err) {
+    console.error("Error fetching posts:", err);
+    res.status(500).json({ error: "Failed to fetch posts" });
+  }
+});
+
+
 // Upload profile image to Cloudinary
 app.post('/profile/upload/:userId', upload.single('image'), async (req, res) => {
   try {
@@ -151,6 +167,53 @@ app.post('/profile/upload/:userId', upload.single('image'), async (req, res) => 
   } catch (error) {
     console.error("Cloudinary upload error:", error);
     res.status(500).json({ message: "Image upload failed" });
+  }
+});
+
+
+
+// Upload posts (image/video) to Cloudinary
+// ========= UPLOAD POST (IMAGE/VIDEO) ========= //
+app.post("/profile/:userId/uploadPost", upload.single("file"), async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    // Upload to Cloudinary
+    const uploaded = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          folder: "expert-hub/posts",
+          resource_type: "auto",
+        },
+        (err, result) => {
+          if (err) reject(err);
+          else resolve(result);
+        }
+      ).end(req.file.buffer);
+    });
+
+    // Save post in Post collection
+    const newPost = new Post({
+      userId,
+      fileUrl: uploaded.secure_url,
+      fileType: req.body.type,
+      description: req.body.description,
+    });
+
+    await newPost.save();
+
+    res.status(200).json({
+      message: "Post uploaded successfully",
+      post: newPost,
+    });
+
+  } catch (error) {
+    console.error("UploadPost error:", error);
+    res.status(500).json({ message: "Upload failed" });
   }
 });
 

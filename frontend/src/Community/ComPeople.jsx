@@ -52,7 +52,7 @@ const ComPeople = () => {
           Community Members
         </h2>
 
-        {/* Grid */}
+        {/* People Grid */}
         <div
           className="d-grid gap-4"
           style={{
@@ -62,114 +62,69 @@ const ComPeople = () => {
           {profiles.map((user) => (
             <div
               key={user._id}
-              className="p-4 border h-100 d-flex flex-column align-items-center text-center"
-              style={{
-                borderRadius: "18px",
-                background: "rgba(35, 61, 77, 0.88)",
-                borderColor: "rgba(255, 107, 0, 0.3)",
-                boxShadow: "0 0 18px rgba(0,0,0,0.2)",
-                transition: "0.3s ease",
-              }}
+              className="people-card"
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-5px)";
+                e.currentTarget.style.transform = "translateY(-6px)";
                 e.currentTarget.style.boxShadow =
-                  "0 12px 25px rgba(0,0,0,0.4)";
+                  "0 12px 30px rgba(0,0,0,0.25)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
                 e.currentTarget.style.boxShadow =
-                  "0 5px 12px rgba(0,0,0,0.25)";
+                  "0 6px 18px rgba(0,0,0,0.12)";
               }}
             >
-              {/* Profile Image */}
+              {/* IMAGE */}
               <img
-                src={user.image? `${import.meta.env.VITE_API_URL}/${user.image}` : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"  }
+                src={
+                  user.image
+                    ? `${import.meta.env.VITE_API_URL}/${user.image}`
+                    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                }
                 alt={user.name}
-                className="rounded-circle mb-3"
-                width="90"
-                height="90"
-                style={{
-                  objectFit: "cover",
-                  border: "2px solid #ff6b00",
-                  padding: "2px",
-                  transition: "0.3s ease",
-                }}
+                className="people-img"
               />
 
-              {/* Name */}
-              <h5
-                className="fw-semibold mb-1"
-                style={{ color: "#ffffff", fontSize: "1.1rem" }}
-              >
-                {user.name || "Unnamed"}
-              </h5>
+              {/* NAME */}
+              <h5 className="people-name">{user.name || "Unnamed"}</h5>
 
-              {/* City */}
-              <p
-                className="mb-1 d-flex align-items-center justify-content-center"
-                style={{ fontSize: "0.9rem", color: "#d1d7db" }}
-              >
-                <MapPin size={16} className="me-1" color="#ff6b00" />
+              {/* CITY */}
+              <p className="people-info">
+                <MapPin size={16} className="icon" />
                 {user.city || "City"}
               </p>
 
-              {/* Skills */}
-              <p
-                className="mb-2 d-flex align-items-center justify-content-center"
-                style={{ fontSize: "0.9rem", color: "#ffb88a" }}
-              >
-                <Briefcase size={16} className="me-1" color="#ff6b00" />
-                {user.skills || "Skills"}
+              {/* SKILLS */}
+             <div className="skill-box">
+  {(Array.isArray(user.skills) ? user.skills.split(",") : [user.skills]).map((skill, index) => (
+    <span key={index} className="skill-tag">
+      {skill.trim()}
+    </span>
+  ))}
+</div>
+
+
+              <hr className="divider" />
+
+              {/* PHONE */}
+              <p className="people-contact">
+                <Phone size={14} className="phone-icon" />
+                {user.phone || "Phone"}
               </p>
 
-              <hr
-                style={{
-                  width: "80%",
-                  borderTop: "1px solid rgba(255, 107, 0, 0.35)",
-                }}
-              />
+              {/* EMAIL */}
+              <p className="people-contact">
+                <Mail size={14} className="mail-icon" />
+                {user.email || "Email"}
+              </p>
 
-              {/* Contact */}
-              <div style={{ fontSize: "0.85rem", color: "#e6e6e6" }}>
-                <p className="mb-1 d-flex justify-content-center align-items-center">
-                  <Phone size={14} className="me-1" color="#22c55e" />
-                  {user.phone || "Phone"}
-                </p>
-
-                <p className="mb-0 d-flex justify-content-center align-items-center">
-                  <Mail size={14} className="me-1" color="#ef4444" />
-                  {user.email || "Email"}
-                </p>
-              </div>
-
-              {/* Connect Button */}
-              <div className="d-flex gap-2 mt-3">
-               <button
-  className="btn btn-sm"
-  style={{
-    background: "#ff6b00",
-    borderRadius: "12px",
-    border: "none",
-    fontWeight: 600,
-    color: "#000",
-    padding: "6px 18px",
-    transition: "0.25s ease",
-  }}
-  onMouseEnter={(e) => {
-    e.currentTarget.style.background = "#ffffff"; // white
-    e.currentTarget.style.color = "#000000"; // black text
-  }}
-  onMouseLeave={(e) => {
-    e.currentTarget.style.background = "#ff6b00"; // pumpkin orange
-    e.currentTarget.style.color = "#000000"; // black text
-  }}
-  onClick={() => navigate(`/connected/${user.userId}`)}
->
-  Connect
-</button>
-
-
-              </div>
+              {/* CONNECT BUTTON */}
+              <button
+                className="connect-btn"
+                onClick={() => navigate(`/connected/${user.userId}`)}
+              >
+                Connect
+              </button>
             </div>
           ))}
 

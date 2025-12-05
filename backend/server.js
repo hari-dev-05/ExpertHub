@@ -4,11 +4,13 @@ const User = require('./mongo');
 const Message = require("./message");
 const nodemailer = require("nodemailer");
 
+const upload = require("./multer");
+const cloudinary = require("./cloudinary");
+
 
 const bcrypt = require('bcrypt');
 const Profile = require('./profile');
-const multer = require('multer');
-const path = require('path');
+
 
 const app = express();
 
@@ -21,7 +23,7 @@ const server = http.createServer(app);
 // Setup Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"], // frontend URLs
+    origin: ["http://localhost:5173", "http://localhost:5174","https://expert-hub-three.vercel.app"], // frontend URLs
     methods: ["GET", "POST"]
   }
 });
@@ -34,14 +36,9 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
 
-// Multer setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
-});
-const upload = multer({ storage });
+
+
 
 // ========================= PROFILE ROUTES ========================= //
 
@@ -110,21 +107,53 @@ app.put('/profile/:userId', async (req, res) => {
   }
 });
 
-// Upload profile image
+// Upload profile image to Cloudinary
 app.post('/profile/upload/:userId', upload.single('image'), async (req, res) => {
   try {
     const { userId } = req.params;
+
     const profile = await Profile.findOne({ userId });
     if (!profile) return res.status(404).json({ message: 'Profile not found' });
 
-    profile.image = req.file.path;
+    if (!req.file) {
+      return res.status(400).json({ message: "No image file uploaded" });
+    }
+
+    // Upload buffer to Cloudinary
+    const uploadToCloudinary = () => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "expert-hub/profiles",
+            resource_type: "image",
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+    };
+
+    const cloudinaryResult = await uploadToCloudinary();
+
+    // Save Cloudinary URL in MongoDB
+    profile.image = cloudinaryResult.secure_url;
     await profile.save();
-    res.status(200).json({ message: 'Image uploaded', profile });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+
+    res.status(200).json({
+      message: "Image uploaded successfully",
+      imageUrl: cloudinaryResult.secure_url,
+      profile,
+    });
+
+  } catch (error) {
+    console.error("Cloudinary upload error:", error);
+    res.status(500).json({ message: "Image upload failed" });
   }
 });
+
 
 
 

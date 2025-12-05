@@ -25,14 +25,14 @@ const server = http.createServer(app);
 // Setup Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174","https://expert-hub-three.vercel.app"], // frontend URLs
+    origin: ["http://localhost:5173", "http://localhost:5174", "https://expert-hub-three.vercel.app"], // frontend URLs
     methods: ["GET", "POST"]
   }
 });
 
 // Configure CORS with specific options
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174","https://expert-hub-three.vercel.app"],
+  origin: ["http://localhost:5173", "http://localhost:5174", "https://expert-hub-three.vercel.app"],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true
 }));
@@ -96,6 +96,64 @@ app.put('/user/email/:userId', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+
+// ========= UPLOAD POST (IMAGE/VIDEO) ========= //
+app.post("/profile/:userId/uploadPost", upload.single("file"), async (req, res) => {
+  console.log("Received upload request for user:", req.params.userId);
+  try {
+    const { userId } = req.params;
+
+    if (!req.file) {
+      console.log("No file in request");
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    console.log("File received:", req.file.originalname, "Size:", req.file.size, "Mime:", req.file.mimetype);
+
+    // Upload to Cloudinary
+    console.log("Starting Cloudinary upload...");
+    const uploaded = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "expert-hub/posts",
+          resource_type: "auto",
+        },
+        (err, result) => {
+          if (err) {
+            console.error("Cloudinary callback error:", err);
+            reject(err);
+          } else {
+            console.log("Cloudinary upload success:", result.secure_url);
+            resolve(result);
+          }
+        }
+      );
+      uploadStream.end(req.file.buffer);
+    });
+
+    // Save post in Post collection
+    console.log("Saving post to DB...");
+    const newPost = new Post({
+      userId,
+      fileUrl: uploaded.secure_url,
+      fileType: req.body.type,
+      description: req.body.description,
+    });
+
+    await newPost.save();
+    console.log("Post saved successfully");
+
+    res.status(200).json({
+      message: "Post uploaded successfully",
+      post: newPost,
+    });
+
+  } catch (error) {
+    console.error("UploadPost error:", error);
+    res.status(500).json({ message: "Upload failed", error: error.message });
+  }
+});
+
 
 // Update profile
 app.put('/profile/:userId', async (req, res) => {
@@ -173,49 +231,6 @@ app.post('/profile/upload/:userId', upload.single('image'), async (req, res) => 
 
 
 // Upload posts (image/video) to Cloudinary
-// ========= UPLOAD POST (IMAGE/VIDEO) ========= //
-app.post("/profile/:userId/uploadPost", upload.single("file"), async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    // Upload to Cloudinary
-    const uploaded = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        {
-          folder: "expert-hub/posts",
-          resource_type: "auto",
-        },
-        (err, result) => {
-          if (err) reject(err);
-          else resolve(result);
-        }
-      ).end(req.file.buffer);
-    });
-
-    // Save post in Post collection
-    const newPost = new Post({
-      userId,
-      fileUrl: uploaded.secure_url,
-      fileType: req.body.type,
-      description: req.body.description,
-    });
-
-    await newPost.save();
-
-    res.status(200).json({
-      message: "Post uploaded successfully",
-      post: newPost,
-    });
-
-  } catch (error) {
-    console.error("UploadPost error:", error);
-    res.status(500).json({ message: "Upload failed" });
-  }
-});
 
 
 
@@ -237,34 +252,34 @@ app.post("/send-otp", async (req, res) => {
       },
     });
     // ========================= RESET PASSWORD ========================= //
-app.post("/reset-password", async (req, res) => {
-  const { email, newPassword } = req.body;
+    app.post("/reset-password", async (req, res) => {
+      const { email, newPassword } = req.body;
 
-  if (!email || !newPassword) {
-    return res.status(400).json({ message: "Email and new password required" });
-  }
+      if (!email || !newPassword) {
+        return res.status(400).json({ message: "Email and new password required" });
+      }
 
-  try {
-    // Find existing user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+      try {
+        // Find existing user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
 
-    // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update the user password
-    user.password = hashedPassword;
-    await user.save();
+        // Update the user password
+        user.password = hashedPassword;
+        await user.save();
 
-    console.log(`🔑 Password updated for ${email}`);
-    res.json({ message: "Password updated successfully" });
-  } catch (error) {
-    console.error("❌ Error resetting password:", error);
-    res.status(500).json({ message: "Server error while resetting password" });
-  }
-});
+        console.log(`🔑 Password updated for ${email}`);
+        res.json({ message: "Password updated successfully" });
+      } catch (error) {
+        console.error("❌ Error resetting password:", error);
+        res.status(500).json({ message: "Server error while resetting password" });
+      }
+    });
 
 
     // Define email content
@@ -399,40 +414,40 @@ const connectedUsers = {}; // userId => [socketId, ...]
 io.on("connection", (socket) => {
   console.log("🟢 A user connected:", socket.id);
 
-socket.on("join", async (userId) => {
-  if (!connectedUsers[userId]) connectedUsers[userId] = [];
-  connectedUsers[userId].push(socket.id);
-  console.log(`User ${userId} connected with socket ${socket.id}`);
+  socket.on("join", async (userId) => {
+    if (!connectedUsers[userId]) connectedUsers[userId] = [];
+    connectedUsers[userId].push(socket.id);
+    console.log(`User ${userId} connected with socket ${socket.id}`);
 
-  // Send undelivered messages
-  const undelivered = await Message.find({ receiverId: userId, delivered: false });
-  undelivered.forEach(async (msg) => {
-    io.to(socket.id).emit("receiveMessage", { senderId: msg.senderId, text: msg.text });
-    msg.delivered = true;
-    await msg.save();
-  });
-});
-
-
-socket.on("sendMessage", async ({ senderId, receiverId, text }) => {
-  console.log(`Message from ${senderId} to ${receiverId}: ${text}`);
-
-  // 1️⃣ Save to database
-  const newMsg = new Message({ senderId, receiverId, text });
-  await newMsg.save();
-
-  // 2️⃣ If receiver is online, deliver instantly
-  const receiverSockets = connectedUsers[receiverId] || [];
-  if (receiverSockets.length > 0) {
-    receiverSockets.forEach(sockId => {
-      io.to(sockId).emit("receiveMessage", { senderId, text });
+    // Send undelivered messages
+    const undelivered = await Message.find({ receiverId: userId, delivered: false });
+    undelivered.forEach(async (msg) => {
+      io.to(socket.id).emit("receiveMessage", { senderId: msg.senderId, text: msg.text });
+      msg.delivered = true;
+      await msg.save();
     });
+  });
 
-    // mark as delivered
-    newMsg.delivered = true;
+
+  socket.on("sendMessage", async ({ senderId, receiverId, text }) => {
+    console.log(`Message from ${senderId} to ${receiverId}: ${text}`);
+
+    // 1️⃣ Save to database
+    const newMsg = new Message({ senderId, receiverId, text });
     await newMsg.save();
-  }
-});
+
+    // 2️⃣ If receiver is online, deliver instantly
+    const receiverSockets = connectedUsers[receiverId] || [];
+    if (receiverSockets.length > 0) {
+      receiverSockets.forEach(sockId => {
+        io.to(sockId).emit("receiveMessage", { senderId, text });
+      });
+
+      // mark as delivered
+      newMsg.delivered = true;
+      await newMsg.save();
+    }
+  });
 
   socket.on("disconnect", () => {
     console.log("🔴 A user disconnected:", socket.id);

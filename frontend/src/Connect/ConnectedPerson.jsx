@@ -142,11 +142,12 @@ useEffect(() => {
           {/* Profile Picture */}
           <div className="position-relative mb-3 mb-md-0 me-md-4">
             <img
-              src={
-                profile?.image
-                  ? `${import.meta.env.VITE_API_URL}/${profile.image}`
-                  : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-              }
+             src={
+  profile?.image
+    ? profile.image
+    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+}
+
               alt={profile?.name}
               className="rounded-circle border border-2"
               width="120"

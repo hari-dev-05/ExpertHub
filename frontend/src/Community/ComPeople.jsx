@@ -75,15 +75,16 @@ const ComPeople = () => {
               }}
             >
               {/* IMAGE */}
-              <img
-                src={
-                  user.image
-                    ? `${import.meta.env.VITE_API_URL}/${user.image}`
-                    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                }
-                alt={user.name}
-                className="people-img"
-              />
+             <img
+  src={
+    user.image
+      ? user.image
+      : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+  }
+  alt={user.name}
+  className="people-img"
+/>
+
 
               {/* NAME */}
               <h5 className="people-name">{user.name || "Unnamed"}</h5>

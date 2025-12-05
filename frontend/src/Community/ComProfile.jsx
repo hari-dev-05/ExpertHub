@@ -116,11 +116,12 @@ const ComProfile = ({ userId }) => {
         <div className="pic-section">
           <div className="profile-pic-wrapper">
             <img
-              src={
-                profile.image
-                  ? `${import.meta.env.VITE_API_URL}/${profile.image}`
-                  : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-              }
+             src={
+  profile.image
+    ? profile.image
+    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+}
+
               className="profile-pic"
             />
 
